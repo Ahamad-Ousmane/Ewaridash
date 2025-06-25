@@ -1,4 +1,3 @@
-@php use Illuminate\Support\Facades\Storage; @endphp
 @extends('layouts.app')
 
 @section('title', $infrastructure->nom . ' - TourismoRA Admin')
@@ -127,11 +126,14 @@
                 </div>
                 
                 <!-- Image principale -->
-                <div x-data="{ currentImage: 0, images: {{ json_encode($infrastructure->images) }} }" class="relative">
+                @php
+                $imageUrls = $infrastructure->image_urls;
+                @endphp
+                <div x-data="{ currentImage: 0, images: {{ json_encode($imageUrls) }} }" class="relative">
                     <div class="aspect-w-16 aspect-h-9 bg-gray-200">
-                        <img :src="`{{ Storage::url('') }}${images[currentImage]}`" 
-                             :alt="'{{ $infrastructure->nom }}'"
-                             class="w-full h-80 object-cover">
+                        <img :src="images[currentImage]" 
+                            :alt="'{{ $infrastructure->nom }}'"
+                            class="w-full h-80 object-cover">
                     </div>
 
                     <!-- Contrôles navigation -->
@@ -168,11 +170,11 @@
                 @if(count($infrastructure->images) > 1)
                 <div class="p-4">
                     <div class="grid grid-cols-4 md:grid-cols-6 gap-2">
-                        @foreach($infrastructure->images as $index => $image)
+                        @foreach($infrastructure->image_urls as $index => $imageUrl)
                         <button @click="currentImage = {{ $index }}"
                                 :class="currentImage === {{ $index }} ? 'ring-2 ring-indigo-500' : ''"
                                 class="relative group aspect-square overflow-hidden rounded-lg border border-gray-200 hover:opacity-75 transition-all">
-                            <img src="{{ Storage::url($image) }}" 
+                            <img src="{{ $imageUrl }}" 
                                  alt="Image {{ $index + 1 }}"
                                  class="w-full h-full object-cover">
                         </button>
@@ -183,63 +185,61 @@
             </div>
             @endif
 
-            
-
-        <!-- Caractéristiques et Galerie -->
-        <div class="lg:col-span-2 space-y-6">
-            @if($infrastructure->caracteristiques && count($infrastructure->caracteristiques) > 0)
-            <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Caractéristiques</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    @if(isset($infrastructure->caracteristiques['prix']))
-                    <div class="flex items-center p-4 bg-green-50 rounded-xl border border-green-100">
-                        <div class="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center mr-3">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-                            </svg>
+            <!-- Caractéristiques et Galerie -->
+            <div class="lg:col-span-2 space-y-6">
+                @if($infrastructure->caracteristiques && count($infrastructure->caracteristiques) > 0)
+                <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Caractéristiques</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        @if(isset($infrastructure->caracteristiques['prix']))
+                        <div class="flex items-center p-4 bg-green-50 rounded-xl border border-green-100">
+                            <div class="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center mr-3">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-green-900">Prix</p>
+                                <p class="text-lg font-bold text-green-900">{{ number_format($infrastructure->caracteristiques['prix'], 0, ',', ' ') }} FCFA</p>
+                            </div>
                         </div>
-                        <div>
-                            <p class="text-sm font-medium text-green-900">Prix</p>
-                            <p class="text-lg font-bold text-green-900">{{ number_format($infrastructure->caracteristiques['prix'], 0, ',', ' ') }} FCFA</p>
+                        @endif
+
+                        @if(isset($infrastructure->caracteristiques['capacite']))
+                        <div class="flex items-center p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <div class="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center mr-3">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-blue-900">Capacité</p>
+                                <p class="text-lg font-bold text-blue-900">{{ $infrastructure->caracteristiques['capacite'] }} personnes</p>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+
+                    @if(isset($infrastructure->caracteristiques['amenities']) && is_array($infrastructure->caracteristiques['amenities']))
+                    <div class="mt-6">
+                        <h4 class="text-sm font-medium text-gray-900 mb-3">Équipements et services</h4>
+                        <div class="flex flex-wrap gap-2">
+                            @foreach($infrastructure->caracteristiques['amenities'] as $amenity)
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                {{ trim($amenity) }}
+                            </span>
+                            @endforeach
                         </div>
                     </div>
                     @endif
-
-                    @if(isset($infrastructure->caracteristiques['capacite']))
-                    <div class="flex items-center p-4 bg-blue-50 rounded-xl border border-blue-100">
-                        <div class="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center mr-3">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-blue-900">Capacité</p>
-                            <p class="text-lg font-bold text-blue-900">{{ $infrastructure->caracteristiques['capacite'] }} personnes</p>
-                        </div>
-                    </div>
-                    @endif
-                </div>
-
-                @if(isset($infrastructure->caracteristiques['amenities']) && is_array($infrastructure->caracteristiques['amenities']))
-                <div class="mt-6">
-                    <h4 class="text-sm font-medium text-gray-900 mb-3">Équipements et services</h4>
-                    <div class="flex flex-wrap gap-2">
-                        @foreach($infrastructure->caracteristiques['amenities'] as $amenity)
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            {{ trim($amenity) }}
-                        </span>
-                        @endforeach
-                    </div>
                 </div>
                 @endif
             </div>
-            @endif
-        </div>
 
-        <!-- Description -->
+            <!-- Description -->
             @if($infrastructure->description)
             <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
                 <h2 class="text-lg font-semibold text-gray-900 mb-4">Description</h2>

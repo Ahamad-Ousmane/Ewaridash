@@ -190,7 +190,7 @@
                     @foreach($recentInfrastructures as $infrastructure)
                     <div class="flex items-center space-x-4 p-4 hover:bg-gray-50 rounded-xl transition-colors border border-gray-100">
                         @if($infrastructure->main_image)
-                        <img src="{{ Storage::url($infrastructure->main_image) }}" alt="{{ $infrastructure->nom }}" class="w-12 h-12 rounded-lg object-cover">
+                        <img src="{{ $infrastructure->getImageUrl($infrastructure->images[0] ?? '') }}" alt="{{ $infrastructure->nom }}" class="w-12 h-12 rounded-lg object-cover">
                         @else
                         <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center">
                             @switch($infrastructure->type)

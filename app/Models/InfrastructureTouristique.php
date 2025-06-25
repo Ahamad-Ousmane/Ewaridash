@@ -77,4 +77,35 @@ class InfrastructureTouristique extends Model
     {
         return $this->caracteristiques['capacite'] ?? null;
     }
+
+
+    public function getImageUrl($imagePath)
+    {
+        if (empty($imagePath)) {
+            return null;
+        }
+
+        // Si l'image commence par "infrastructures/" = Supabase
+        if (str_starts_with($imagePath, 'infrastructures/')) {
+            $supabaseUrl = env('SUPABASE_URL', 'https://gpogbnmvkvpzphtbosai.supabase.co');
+            return $supabaseUrl . '/storage/v1/object/public/images/' . $imagePath;
+        }
+
+        // Sinon = stockage local Laravel
+        return '/storage/' . $imagePath;
+    }
+
+    /**
+     * Retourne toutes les URLs des images
+     */
+    public function getImageUrlsAttribute()
+    {
+        if (!$this->images || !is_array($this->images)) {
+            return [];
+        }
+
+        return array_map(function($imagePath) {
+            return $this->getImageUrl($imagePath);
+        }, $this->images);
+    }
 }

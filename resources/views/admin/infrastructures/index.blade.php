@@ -217,7 +217,7 @@
                                 <div class="flex-shrink-0 h-12 w-12">
                                     @if($infrastructure->images && count($infrastructure->images) > 0)
                                         <img class="h-12 w-12 rounded-lg object-cover border border-gray-200" 
-                                             src="{{ Storage::url($infrastructure->images[0]) }}" 
+                                             src="{{ $infrastructure->getImageUrl($infrastructure->images[0] ?? '') }}"
                                              alt="{{ $infrastructure->nom }}">
                                     @else
                                         <div class="h-12 w-12 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">

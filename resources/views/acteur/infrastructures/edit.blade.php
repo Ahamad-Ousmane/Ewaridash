@@ -285,7 +285,7 @@
                     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="current-images">
                         @foreach($infrastructure->images as $index => $image)
                         <div class="relative group" data-image-index="{{ $index }}">
-                            <img src="{{ asset('storage/' . $image) }}" 
+                            <img src="{{ $infrastructure->getImageUrl($image) }}" 
                                  alt="Image {{ $index + 1 }}"
                                  class="w-full h-32 object-cover rounded-lg border border-gray-200">
                             <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 rounded-lg transition-all flex items-center justify-center">
