@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Compléter votre profil - TourismoRA')
+@section('title', 'Compléter votre profil - EWARI')
 
 @section('content')
 <div class="container mx-auto px-4 py-8">

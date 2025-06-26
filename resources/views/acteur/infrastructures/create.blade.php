@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Ajouter une Infrastructure - TourismoRA')
+@section('title', 'Ajouter une Infrastructure - EWARI')
 @section('page-title', 'Nouvelle Infrastructure')
 
 @section('sidebar')
@@ -8,6 +8,7 @@
 <a href="{{ route('acteur.dashboard') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-xl text-gray-300 hover:bg-gray-700 hover:text-white transition-colors">
     <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4M8 7h8"></path>
     </svg>
     Dashboard
 </a>
