@@ -282,7 +282,13 @@ class AdminController extends Controller
 
         // Filtrage par recherche
         if ($request->filled('search')) {
-            $query->where('nom', 'like', '%' . $request->search . '%');
+            $query->where(function ($q) use ($request) {
+                $q->where('nom', 'like', '%' . $request->search . '%')
+                ->orWhereHas('acteurTouristique.utilisateur', function ($subQ) use ($request) {
+                    $subQ->where('nom', 'like', '%' . $request->search . '%')
+                        ->orWhere('email', 'like', '%' . $request->search . '%');
+                });
+            });
         }
 
         // Filtrage par type
@@ -292,7 +298,13 @@ class AdminController extends Controller
 
         // Filtrage par statut
         if ($request->filled('status')) {
-            $query->where('is_active', $request->status === 'active');
+            $query->whereHas('acteurTouristique.utilisateur', function ($q) use ($request) {
+                if ($request->status === 'active') {
+                    $q->where('is_active', true);
+                } elseif ($request->status === 'inactive') {
+                    $q->where('is_active', false);
+                }
+            });
         }
 
         // Filtrage par acteur
@@ -300,11 +312,27 @@ class AdminController extends Controller
             $query->where('acteur_touristique_id', $request->acteur);
         }
 
-        $infrastructures = $query->orderBy('created_at', 'desc')->paginate(15);
+        // Tri (par défaut le plus récent)
+        switch ($request->get('sort', 'newest')) {
+            case 'oldest':
+                $query->orderBy('created_at', 'asc');
+                break;
+            case 'name_asc':
+                $query->orderBy('nom', 'asc');
+                break;
+            case 'name_desc':
+                $query->orderBy('nom', 'desc');
+                break;
+            default:
+                $query->orderBy('created_at', 'desc');
+        }
+
+        $infrastructures = $query->paginate(15);
         $acteurs = ActeurTouristique::all();
 
         return view('admin.infrastructures.index', compact('infrastructures', 'acteurs'));
     }
+
 
     /**
      * Afficher une infrastructure
@@ -366,8 +394,6 @@ class AdminController extends Controller
 
         return back()->with('success', $message);
     }
-
-
 
     public function acteursIndex(Request $request)
     {

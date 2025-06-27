@@ -350,32 +350,22 @@
                                 </a>
 
                                 <!-- Toggle statut -->
-                                <form action="{{ route('admin.infrastructures.toggle-status', $infrastructure) }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('PATCH')
-                                    <button type="submit"
-                                        class="{{ $infrastructure->is_active ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900' }} transition-colors"
-                                        title="{{ $infrastructure->is_active ? 'Désactiver' : 'Activer' }}"
-                                        onclick="return confirm('Êtes-vous sûr de vouloir {{ $infrastructure->is_active ? 'désactiver' : 'activer' }} cette infrastructure ?')">
-                                        @if($infrastructure->is_active)
-                                        <i class="bi bi-x-circle"></i>
-                                        @else
-                                        <i class="bi bi-check-circle"></i>
-                                        @endif
-                                    </button>
-                                </form>
+                                <button onclick="showConfirmModal('toggle', '{{ $infrastructure->id }}', '{{ $infrastructure->is_active ? 'désactiver' : 'activer' }}', '{{ $infrastructure->nom }}')"
+                                    class="{{ $infrastructure->is_active ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900' }} transition-colors"
+                                    title="{{ $infrastructure->is_active ? 'Désactiver' : 'Activer' }}">
+                                    @if($infrastructure->is_active)
+                                    <i class="bi bi-x-circle"></i>
+                                    @else
+                                    <i class="bi bi-check-circle"></i>
+                                    @endif
+                                </button>
 
                                 <!-- Supprimer -->
-                                <form action="{{ route('admin.infrastructures.destroy', $infrastructure) }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                        class="text-red-600 hover:text-red-900 transition-colors"
-                                        title="Supprimer"
-                                        onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette infrastructure ? Cette action est irréversible.')">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
+                                <button onclick="showConfirmModal('delete', '{{ $infrastructure->id }}', 'supprimer', '{{ $infrastructure->nom }}')"
+                                    class="text-red-600 hover:text-red-900 transition-colors"
+                                    title="Supprimer">
+                                    <i class="bi bi-trash"></i>
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -443,6 +433,38 @@
     </div>
     @endif
 </div>
+
+<!-- Modale de confirmation -->
+<div id="confirmModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="text-center">
+            <div id="modalIcon" class="mx-auto mb-4 w-12 h-12 rounded-full flex items-center justify-center">
+                <i id="modalIconElement" class="text-2xl"></i>
+            </div>
+            <h3 id="modalTitle" class="text-lg font-semibold text-gray-900 mb-2"></h3>
+            <p id="modalMessage" class="text-gray-600 mb-6"></p>
+            <div class="flex justify-center space-x-3">
+                <button id="confirmAction" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                    Confirmer
+                </button>
+                <button onclick="hideConfirmModal()" class="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">
+                    Annuler
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Formulaires cachés pour les actions -->
+<form id="toggleForm" action="" method="POST" style="display: none;">
+    @csrf
+    @method('PATCH')
+</form>
+
+<form id="deleteForm" action="" method="POST" style="display: none;">
+    @csrf
+    @method('DELETE')
+</form>
 
 @push('scripts')
 <script>
@@ -549,19 +571,19 @@
         // Événements pour les boutons d'actions en lot
         if (bulkActivateBtn) {
             bulkActivateBtn.addEventListener('click', function() {
-                performBulkAction('activate', 'Êtes-vous sûr de vouloir activer les infrastructures sélectionnées ?');
+                showConfirmModal('bulk-activate', '', 'activer', 'les infrastructures sélectionnées');
             });
         }
 
         if (bulkDeactivateBtn) {
             bulkDeactivateBtn.addEventListener('click', function() {
-                performBulkAction('deactivate', 'Êtes-vous sûr de vouloir désactiver les infrastructures sélectionnées ?');
+                showConfirmModal('bulk-deactivate', '', 'désactiver', 'les infrastructures sélectionnées');
             });
         }
 
         if (bulkDeleteBtn) {
             bulkDeleteBtn.addEventListener('click', function() {
-                performBulkAction('delete', 'Êtes-vous sûr de vouloir supprimer les infrastructures sélectionnées ? Cette action est irréversible.');
+                showConfirmModal('bulk-delete', '', 'supprimer', 'les infrastructures sélectionnées');
             });
         }
 
@@ -588,6 +610,142 @@
                 cancelSelectionBtn.click();
             }
         });
+    });
+
+    // Gestion de la modale de confirmation
+    let currentAction = null;
+    let currentInfrastructureId = null;
+
+    function showConfirmModal(action, infrastructureId, actionText, infrastructureName) {
+        currentAction = action;
+        currentInfrastructureId = infrastructureId;
+        
+        const modal = document.getElementById('confirmModal');
+        const modalIcon = document.getElementById('modalIcon');
+        const modalIconElement = document.getElementById('modalIconElement');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const confirmButton = document.getElementById('confirmAction');
+        
+        if (action.includes('delete')) {
+            modalIcon.className = 'mx-auto mb-4 w-12 h-12 rounded-full flex items-center justify-center bg-red-100';
+            modalIconElement.className = 'text-2xl bi bi-trash text-red-600';
+            modalTitle.textContent = 'Confirmer la suppression';
+            modalMessage.textContent = `Êtes-vous sûr de vouloir supprimer ${infrastructureName} ? Cette action est irréversible.`;
+            confirmButton.className = 'px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors';
+            confirmButton.textContent = 'Supprimer';
+        } else if (action.includes('toggle') || action.includes('activate') || action.includes('deactivate')) {
+            if (actionText === 'désactiver') {
+                modalIcon.className = 'mx-auto mb-4 w-12 h-12 rounded-full flex items-center justify-center bg-orange-100';
+                modalIconElement.className = 'text-2xl bi bi-x-circle text-orange-600';
+                modalTitle.textContent = 'Confirmer la désactivation';
+                modalMessage.textContent = `Êtes-vous sûr de vouloir désactiver ${infrastructureName} ?`;
+                confirmButton.className = 'px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors';
+                confirmButton.textContent = 'Désactiver';
+            } else {
+                modalIcon.className = 'mx-auto mb-4 w-12 h-12 rounded-full flex items-center justify-center bg-green-100';
+                modalIconElement.className = 'text-2xl bi bi-check-circle text-green-600';
+                modalTitle.textContent = 'Confirmer l\'activation';
+                modalMessage.textContent = `Êtes-vous sûr de vouloir activer ${infrastructureName} ?`;
+                confirmButton.className = 'px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors';
+                confirmButton.textContent = 'Activer';
+            }
+        }
+        
+        modal.classList.add('show');
+    }
+
+    function hideConfirmModal() {
+        const modal = document.getElementById('confirmModal');
+        modal.classList.remove('show');
+        currentAction = null;
+        currentInfrastructureId = null;
+    }
+
+    function executeAction() {
+        if (currentAction) {
+            if (currentAction.includes('bulk')) {
+                // Gestion des actions en lot
+                const selectedIds = Array.from(document.querySelectorAll('.infrastructure-checkbox:checked'))
+                    .map(checkbox => checkbox.value);
+                
+                if (selectedIds.length === 0) {
+                    alert('Veuillez sélectionner au moins une infrastructure.');
+                    return;
+                }
+
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ route("admin.infrastructures.bulk-action") }}';
+                form.style.display = 'none';
+
+                // Ajouter le token CSRF
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = '{{ csrf_token() }}';
+                form.appendChild(csrfToken);
+
+                // Ajouter l'action
+                const actionInput = document.createElement('input');
+                actionInput.type = 'hidden';
+                actionInput.name = 'action';
+                
+                if (currentAction.includes('activate')) {
+                    actionInput.value = 'activate';
+                } else if (currentAction.includes('deactivate')) {
+                    actionInput.value = 'deactivate';
+                } else if (currentAction.includes('delete')) {
+                    actionInput.value = 'delete';
+                }
+                
+                form.appendChild(actionInput);
+
+                // Ajouter les IDs sélectionnés
+                selectedIds.forEach(id => {
+                    const idInput = document.createElement('input');
+                    idInput.type = 'hidden';
+                    idInput.name = 'infrastructure_ids[]';
+                    idInput.value = id;
+                    form.appendChild(idInput);
+                });
+
+                document.body.appendChild(form);
+                form.submit();
+            } else {
+                // Gestion des actions individuelles
+                const formId = currentAction === 'delete' ? 'deleteForm' : 'toggleForm';
+                const form = document.getElementById(formId);
+                
+                if (form) {
+                    // Mettre à jour l'action du formulaire
+                    if (currentAction === 'delete') {
+                        form.action = `/admin/infrastructures/${currentInfrastructureId}`;
+                    } else {
+                        form.action = `/admin/infrastructures/${currentInfrastructureId}/toggle-status`;
+                    }
+                    form.submit();
+                }
+            }
+        }
+        hideConfirmModal();
+    }
+
+    // Event listener pour le bouton de confirmation
+    document.getElementById('confirmAction').addEventListener('click', executeAction);
+
+    // Fermer la modale en cliquant sur l'overlay
+    document.getElementById('confirmModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            hideConfirmModal();
+        }
+    });
+
+    // Fermer la modale avec la touche Échap
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            hideConfirmModal();
+        }
     });
 
     // Animation d'entrée pour les lignes du tableau
