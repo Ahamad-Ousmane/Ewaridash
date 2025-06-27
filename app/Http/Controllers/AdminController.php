@@ -10,6 +10,8 @@ use App\Models\ActeurTouristique;
 use App\Models\InfrastructureTouristique;
 use App\Models\RaContenu;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Carbon;
 
 class AdminController extends Controller
 {
@@ -18,25 +20,32 @@ class AdminController extends Controller
      */
     public function dashboard()
     {
+        Log::info('=== DASHBOARD DEBUG ===');
+        Log::info('Auth check: ' . (auth()->check() ? 'TRUE' : 'FALSE'));
+        Log::info('Auth user: ' . (auth()->user() ? auth()->user()->email : 'NULL'));
+        Log::info('Session ID: ' . session()->getId());
+        Log::info('Session data: ' . json_encode(session()->all()));
 
-        \Log::info('=== DASHBOARD DEBUG ===');
-    \Log::info('Auth check: ' . (auth()->check() ? 'TRUE' : 'FALSE'));
-    \Log::info('Auth user: ' . (auth()->user() ? auth()->user()->email : 'NULL'));
-    \Log::info('Session ID: ' . session()->getId());
-    \Log::info('Session data: ' . json_encode(session()->all()));
-        // ✅ Toutes les statistiques nécessaires à la vue
+        // Statistiques principales
         $stats = [
-            // Statistiques existantes (déjà dans votre code)
             'total_users' => Utilisateur::count(),
             'active_users' => Utilisateur::where('is_active', true)->count(),
             'active_infrastructures' => InfrastructureTouristique::where('is_active', true)->count(),
-            'active_acteurs' => Utilisateur::where('is_active', true)->count(),
+            'active_acteurs' => ActeurTouristique::whereHas('utilisateur', fn($q) => $q->where('is_active', true))->count(),
             'total_acteurs' => ActeurTouristique::count(),
             'total_infrastructures' => InfrastructureTouristique::count(),
             'total_contenus' => RaContenu::count(),
+            'taux_activite' => $this->calculateActivityRate(),
+            'croissance' => $this->calculateGrowth(),
         ];
 
-        // ✅ Variables attendues par la vue pour les listes récentes
+        // Données pour les graphiques
+        $chartData = [
+            'activity' => $this->getActivityData(30),
+            'infrastructure_types' => $this->getInfrastructureTypeData(),
+        ];
+
+        // Listes récentes
         $recentActeurs = ActeurTouristique::with('utilisateur')
                                          ->latest()
                                          ->take(5)
@@ -47,13 +56,74 @@ class AdminController extends Controller
                                                          ->take(5)
                                                          ->get();
 
-        // ✅ Passer toutes les variables à la vue
-        return view('admin.dashboard', compact('stats', 'recentActeurs', 'recentInfrastructures'));
+        return view('admin.dashboard', compact('stats', 'recentActeurs', 'recentInfrastructures', 'chartData'));
     }
 
     /**
-     * Gestion des utilisateurs
+     * Calculer le taux d'activité
      */
+    private function calculateActivityRate()
+    {
+        $total = ActeurTouristique::count();
+        $active = ActeurTouristique::whereHas('utilisateur', fn($q) => $q->where('is_active', true))->count();
+        
+        return $total > 0 ? round(($active / $total) * 100) : 0;
+    }
+
+    /**
+     * Calculer le taux de croissance
+     */
+    private function calculateGrowth()
+    {
+        $currentMonth = ActeurTouristique::whereMonth('created_at', now()->month)->count();
+        $lastMonth = ActeurTouristique::whereMonth('created_at', now()->subMonth()->month)->count();
+        
+        return $lastMonth > 0 ? round(($currentMonth - $lastMonth) / $lastMonth * 100) : ($currentMonth > 0 ? 100 : 0);
+    }
+
+    /**
+     * Données d'activité pour le graphique
+     */
+    private function getActivityData($days = 30)
+    {
+        $labels = [];
+        $inscriptions = [];
+        $infrastructures = [];
+
+        for ($i = $days; $i >= 0; $i--) {
+            $date = Carbon::now()->subDays($i);
+            $labels[] = $date->format('d M');
+            
+            $inscriptions[] = Utilisateur::whereDate('created_at', $date)->count();
+            $infrastructures[] = InfrastructureTouristique::whereDate('created_at', $date)->count();
+        }
+
+        return [
+            'labels' => $labels,
+            'inscriptions' => $inscriptions,
+            'infrastructures' => $infrastructures
+        ];
+    }
+
+    /**
+     * Données des types d'infrastructures
+     */
+    private function getInfrastructureTypeData()
+    {
+        $types = InfrastructureTouristique::select('type')
+            ->selectRaw('count(*) as count')
+            ->groupBy('type')
+            ->get()
+            ->mapWithKeys(function($item) {
+                return [$item->type => $item->count];
+            });
+
+        return [
+            'labels' => $types->keys(),
+            'data' => $types->values()
+        ];
+    }
+
     public function users()
     {
         $users = Utilisateur::with('acteurTouristique')->paginate(15);
@@ -300,280 +370,272 @@ class AdminController extends Controller
 
 
     public function acteursIndex(Request $request)
-{
-    $query = ActeurTouristique::with(['utilisateur'])
-        ->withCount('infrastructures');
+    {
+        $query = ActeurTouristique::with(['utilisateur'])
+            ->withCount('infrastructures');
 
-    // Filtrage par recherche
-    if ($request->filled('search')) {
-        $query->where(function($q) use ($request) {
-            $q->where('nom_entreprise', 'like', '%' . $request->search . '%')
-              ->orWhereHas('utilisateur', function($subQ) use ($request) {
-                  $subQ->where('nom', 'like', '%' . $request->search . '%')
-                       ->orWhere('prenom', 'like', '%' . $request->search . '%')
-                       ->orWhere('email', 'like', '%' . $request->search . '%');
-              });
-        });
-    }
-
-    // Filtrage par statut
-    if ($request->filled('status')) {
-        $query->whereHas('utilisateur', function($q) use ($request) {
-            if ($request->status === 'active') {
-                $q->where('is_active', true);
-            } elseif ($request->status === 'inactive') {
-                $q->where('is_active', false);
-            }
-        });
-    }
-
-    // Tri
-    switch ($request->get('sort', 'newest')) {
-        case 'oldest':
-            $query->orderBy('created_at', 'asc');
-            break;
-        case 'name_asc':
-            $query->orderBy('nom_entreprise', 'asc');
-            break;
-        case 'name_desc':
-            $query->orderBy('nom_entreprise', 'desc');
-            break;
-        case 'most_infrastructures':
-            $query->orderByDesc('infrastructures_count');
-            break;
-        default:
-            $query->orderBy('created_at', 'desc');
-    }
-
-    $acteurs = $query->paginate(12);
-
-    return view('admin.acteurs.index', compact('acteurs'));
-}
-
-
-
-
-
-/**
- * Afficher un acteur touristique
- */
-public function acteursShow(ActeurTouristique $acteur)
-{
-    $acteur->load(['utilisateur', 'infrastructures']);
-    return view('admin.acteurs.show', compact('acteur'));
-}
-
-/**
- * Afficher le formulaire de création d'un acteur
- */
-public function acteursCreate()
-{
-    return view('admin.acteurs.create');
-}
-
-/**
- * Créer un nouvel acteur touristique
- */
-public function acteursStore(Request $request)
-{
-    $request->validate([
-        'nom' => 'required|string|max:255',
-        'prenom' => 'required|string|max:255',
-        'email' => 'required|email|unique:utilisateurs,email',
-        'telephone' => 'nullable|string|max:20',
-        'nom_entreprise' => 'required|string|max:255',
-        'adresse' => 'nullable|string|max:500',
-        'type_activite' => 'required|string|in:hotel,restaurant,transport,activite,autre',
-        'description' => 'nullable|string|max:1000',
-        'site_web' => 'nullable|url|max:255',
-        'password' => 'required|string|min:8|confirmed',
-    ]);
-
-    DB::beginTransaction();
-    try {
-        // Créer l'utilisateur
-        $utilisateur = Utilisateur::create([
-            'nom' => $request->nom,
-            'prenom' => $request->prenom,
-            'email' => $request->email,
-            'telephone' => $request->telephone,
-            'password' => Hash::make($request->password),
-            'role' => 'acteur_touristique',
-            'is_active' => true,
-        ]);
-
-        // Créer l'acteur touristique
-        $acteur = ActeurTouristique::create([
-            'utilisateur_id' => $utilisateur->id,
-            'nom_entreprise' => $request->nom_entreprise,
-            'adresse' => $request->adresse,
-            'telephone' => $request->telephone,
-            'type_activite' => $request->type_activite,
-            'description' => $request->description,
-            'site_web' => $request->site_web,
-        ]);
-
-        DB::commit();
-
-        return redirect()->route('admin.acteurs.index')
-            ->with('success', 'Acteur touristique créé avec succès.');
-
-    } catch (\Exception $e) {
-        DB::rollback();
-        return back()->withErrors(['error' => 'Erreur lors de la création de l\'acteur.'])
-            ->withInput();
-    }
-}
-
-/**
- * Afficher le formulaire d'édition d'un acteur
- */
-public function acteursEdit(ActeurTouristique $acteur)
-{
-    $acteur->load('utilisateur');
-    return view('admin.acteurs.edit', compact('acteur'));
-}
-
-/**
- * Mettre à jour un acteur touristique
- */
-public function acteursUpdate(Request $request, ActeurTouristique $acteur)
-{
-    $request->validate([
-        'nom' => 'required|string|max:255',
-        'prenom' => 'required|string|max:255',
-        'email' => 'required|email|unique:utilisateurs,email,' . $acteur->utilisateur->id,
-        'telephone' => 'nullable|string|max:20',
-        'nom_entreprise' => 'required|string|max:255',
-        'adresse' => 'nullable|string|max:500',
-        'type_activite' => 'required|string|in:hotel,restaurant,transport,activite,autre',
-        'description' => 'nullable|string|max:1000',
-        'site_web' => 'nullable|url|max:255',
-        'password' => 'nullable|string|min:8|confirmed',
-    ]);
-
-    DB::beginTransaction();
-    try {
-        // Mettre à jour l'utilisateur
-        $updateData = [
-            'nom' => $request->nom,
-            'prenom' => $request->prenom,
-            'email' => $request->email,
-            'telephone' => $request->telephone,
-        ];
-
-        if ($request->filled('password')) {
-            $updateData['password'] = Hash::make($request->password);
+        // Filtrage par recherche
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('nom_entreprise', 'like', '%' . $request->search . '%')
+                    ->orWhereHas('utilisateur', function ($subQ) use ($request) {
+                        $subQ->where('nom', 'like', '%' . $request->search . '%')
+                            ->orWhere('email', 'like', '%' . $request->search . '%');
+                    });
+            });
         }
 
-        $acteur->utilisateur->update($updateData);
+        // Filtrage par statut
+        if ($request->filled('status')) {
+            $query->whereHas('utilisateur', function ($q) use ($request) {
+                if ($request->status === 'active') {
+                    $q->where('is_active', true);
+                } elseif ($request->status === 'inactive') {
+                    $q->where('is_active', false);
+                }
+            });
+        }
 
-        // Mettre à jour l'acteur touristique
-        $acteur->update([
-            'nom_entreprise' => $request->nom_entreprise,
-            'adresse' => $request->adresse,
-            'telephone' => $request->telephone,
-            'type_activite' => $request->type_activite,
-            'description' => $request->description,
-            'site_web' => $request->site_web,
+        // Tri
+        switch ($request->get('sort', 'newest')) {
+            case 'oldest':
+                $query->orderBy('created_at', 'asc');
+                break;
+            case 'name_asc':
+                $query->orderBy('nom_entreprise', 'asc');
+                break;
+            case 'name_desc':
+                $query->orderBy('nom_entreprise', 'desc');
+                break;
+            case 'most_infrastructures':
+                $query->orderByDesc('infrastructures_count');
+                break;
+            default:
+                $query->orderBy('created_at', 'desc');
+        }
+
+        $acteurs = $query->paginate(12);
+
+        return view('admin.acteurs.index', compact('acteurs'));
+    }
+
+    /**
+     * Afficher un acteur touristique
+     */
+    public function acteursShow(ActeurTouristique $acteur)
+    {
+        $acteur->load(['utilisateur', 'infrastructures']);
+        return view('admin.acteurs.show', compact('acteur'));
+    }
+
+    /**
+     * Afficher le formulaire de création d'un acteur
+     */
+    public function acteursCreate()
+    {
+        return view('admin.acteurs.create');
+    }
+
+    /**
+     * Créer un nouvel acteur touristique
+     */
+    public function acteursStore(Request $request)
+    {
+        $request->validate([
+            'nom' => 'required|string|max:255',
+            'prenom' => 'required|string|max:255',
+            'email' => 'required|email|unique:utilisateurs,email',
+            'telephone' => 'nullable|string|max:20',
+            'nom_entreprise' => 'required|string|max:255',
+            'adresse' => 'nullable|string|max:500',
+            'type_activite' => 'required|string|in:hotel,restaurant,transport,activite,autre',
+            'description' => 'nullable|string|max:1000',
+            'site_web' => 'nullable|url|max:255',
+            'password' => 'required|string|min:8|confirmed',
         ]);
 
-        DB::commit();
+        DB::beginTransaction();
+        try {
+            // Créer l'utilisateur
+            $utilisateur = Utilisateur::create([
+                'nom' => $request->nom,
+                'prenom' => $request->prenom,
+                'email' => $request->email,
+                'telephone' => $request->telephone,
+                'password' => Hash::make($request->password),
+                'role' => 'acteur_touristique',
+                'is_active' => true,
+            ]);
 
-        return redirect()->route('admin.acteurs.show', $acteur)
-            ->with('success', 'Acteur touristique mis à jour avec succès.');
+            // Créer l'acteur touristique
+            $acteur = ActeurTouristique::create([
+                'utilisateur_id' => $utilisateur->id,
+                'nom_entreprise' => $request->nom_entreprise,
+                'adresse' => $request->adresse,
+                'telephone' => $request->telephone,
+                'type_activite' => $request->type_activite,
+                'description' => $request->description,
+                'site_web' => $request->site_web,
+            ]);
 
-    } catch (\Exception $e) {
-        DB::rollback();
-        return back()->withErrors(['error' => 'Erreur lors de la mise à jour de l\'acteur.'])
-            ->withInput();
+            DB::commit();
+
+            return redirect()->route('admin.acteurs.index')
+                ->with('success', 'Acteur touristique créé avec succès.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->withErrors(['error' => 'Erreur lors de la création de l\'acteur.'])
+                ->withInput();
+        }
     }
-}
 
-/**
- * Basculer le statut d'un acteur
- */
-public function acteursToggleStatus(ActeurTouristique $acteur)
-{
-    $acteur->utilisateur->update([
-        'is_active' => !$acteur->utilisateur->is_active
-    ]);
-
-    $status = $acteur->utilisateur->is_active ? 'activé' : 'désactivé';
-    return back()->with('success', "Acteur {$status} avec succès.");
-}
-
-/**
- * Supprimer un acteur touristique
- */
-public function acteursDestroy(ActeurTouristique $acteur)
-{
-    DB::beginTransaction();
-    try {
-        // Supprimer d'abord les infrastructures
-        $acteur->infrastructures()->delete();
-        
-        // Puis supprimer l'acteur et l'utilisateur
-        $utilisateur = $acteur->utilisateur;
-        $acteur->delete();
-        $utilisateur->delete();
-
-        DB::commit();
-
-        return back()->with('success', 'Acteur supprimé avec succès.');
-
-    } catch (\Exception $e) {
-        DB::rollback();
-        return back()->withErrors(['error' => 'Erreur lors de la suppression de l\'acteur.']);
+    /**
+     * Afficher le formulaire d'édition d'un acteur
+     */
+    public function acteursEdit(ActeurTouristique $acteur)
+    {
+        $acteur->load('utilisateur');
+        return view('admin.acteurs.edit', compact('acteur'));
     }
-}
 
-/**
- * Actions en lot sur les acteurs
- */
-public function acteursBulkAction(Request $request)
-{
-    $request->validate([
-        'action' => 'required|in:activate,deactivate,delete',
-        'acteur_ids' => 'required|array',
-        'acteur_ids.*' => 'exists:acteurs_touristiques,id'
-    ]);
+    /**
+     * Mettre à jour un acteur touristique
+     */
+    public function acteursUpdate(Request $request, ActeurTouristique $acteur)
+    {
+        $request->validate([
+            'nom' => 'required|string|max:255',
+            'prenom' => 'required|string|max:255',
+            'email' => 'required|email|unique:utilisateurs,email,' . $acteur->utilisateur->id,
+            'telephone' => 'nullable|string|max:20',
+            'nom_entreprise' => 'required|string|max:255',
+            'adresse' => 'nullable|string|max:500',
+            'type_activite' => 'required|string|in:hotel,restaurant,transport,activite,autre',
+            'description' => 'nullable|string|max:1000',
+            'site_web' => 'nullable|url|max:255',
+            'password' => 'nullable|string|min:8|confirmed',
+        ]);
 
-    $acteurs = ActeurTouristique::with('utilisateur')->whereIn('id', $request->acteur_ids);
+        DB::beginTransaction();
+        try {
+            // Mettre à jour l'utilisateur
+            $updateData = [
+                'nom' => $request->nom,
+                'prenom' => $request->prenom,
+                'email' => $request->email,
+                'telephone' => $request->telephone,
+            ];
 
-    switch ($request->action) {
-        case 'activate':
-            foreach ($acteurs->get() as $acteur) {
-                $acteur->utilisateur->update(['is_active' => true]);
+            if ($request->filled('password')) {
+                $updateData['password'] = Hash::make($request->password);
             }
-            $message = 'Acteurs activés avec succès.';
-            break;
 
-        case 'deactivate':
-            foreach ($acteurs->get() as $acteur) {
-                $acteur->utilisateur->update(['is_active' => false]);
-            }
-            $message = 'Acteurs désactivés avec succès.';
-            break;
+            $acteur->utilisateur->update($updateData);
 
-        case 'delete':
-            DB::beginTransaction();
-            try {
+            // Mettre à jour l'acteur touristique
+            $acteur->update([
+                'nom_entreprise' => $request->nom_entreprise,
+                'adresse' => $request->adresse,
+                'telephone' => $request->telephone,
+                'type_activite' => $request->type_activite,
+                'description' => $request->description,
+                'site_web' => $request->site_web,
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('admin.acteurs.show', $acteur)
+                ->with('success', 'Acteur touristique mis à jour avec succès.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->withErrors(['error' => 'Erreur lors de la mise à jour de l\'acteur.'])
+                ->withInput();
+        }
+    }
+
+    /**
+     * Basculer le statut d'un acteur
+     */
+    public function acteursToggleStatus(ActeurTouristique $acteur)
+    {
+        $acteur->utilisateur->update([
+            'is_active' => !$acteur->utilisateur->is_active
+        ]);
+
+        $status = $acteur->utilisateur->is_active ? 'activé' : 'désactivé';
+        return back()->with('success', "Acteur {$status} avec succès.");
+    }
+
+    /**
+     * Supprimer un acteur touristique
+     */
+    public function acteursDestroy(ActeurTouristique $acteur)
+    {
+        DB::beginTransaction();
+        try {
+            // Supprimer d'abord les infrastructures
+            $acteur->infrastructures()->delete();
+
+            // Puis supprimer l'acteur et l'utilisateur
+            $utilisateur = $acteur->utilisateur;
+            $acteur->delete();
+            $utilisateur->delete();
+
+            DB::commit();
+
+            return back()->with('success', 'Acteur supprimé avec succès.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->withErrors(['error' => 'Erreur lors de la suppression de l\'acteur.']);
+        }
+    }
+
+    /**
+     * Actions en lot sur les acteurs
+     */
+    public function acteursBulkAction(Request $request)
+    {
+        $request->validate([
+            'action' => 'required|in:activate,deactivate,delete',
+            'acteur_ids' => 'required|array',
+            'acteur_ids.*' => 'exists:acteurs_touristiques,id'
+        ]);
+
+        $acteurs = ActeurTouristique::with('utilisateur')->whereIn('id', $request->acteur_ids);
+
+        switch ($request->action) {
+            case 'activate':
                 foreach ($acteurs->get() as $acteur) {
-                    $acteur->infrastructures()->delete();
-                    $utilisateur = $acteur->utilisateur;
-                    $acteur->delete();
-                    $utilisateur->delete();
+                    $acteur->utilisateur->update(['is_active' => true]);
                 }
-                DB::commit();
-                $message = 'Acteurs supprimés avec succès.';
-            } catch (\Exception $e) {
-                DB::rollback();
-                return back()->withErrors(['error' => 'Erreur lors de la suppression des acteurs.']);
-            }
-            break;
-    }
+                $message = 'Acteurs activés avec succès.';
+                break;
 
-    return back()->with('success', $message);
-}
+            case 'deactivate':
+                foreach ($acteurs->get() as $acteur) {
+                    $acteur->utilisateur->update(['is_active' => false]);
+                }
+                $message = 'Acteurs désactivés avec succès.';
+                break;
+
+            case 'delete':
+                DB::beginTransaction();
+                try {
+                    foreach ($acteurs->get() as $acteur) {
+                        $acteur->infrastructures()->delete();
+                        $utilisateur = $acteur->utilisateur;
+                        $acteur->delete();
+                        $utilisateur->delete();
+                    }
+                    DB::commit();
+                    $message = 'Acteurs supprimés avec succès.';
+                } catch (\Exception $e) {
+                    DB::rollback();
+                    return back()->withErrors(['error' => 'Erreur lors de la suppression des acteurs.']);
+                }
+                break;
+        }
+
+        return back()->with('success', $message);
+    }
 }

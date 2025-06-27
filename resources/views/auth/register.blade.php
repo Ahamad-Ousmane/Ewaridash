@@ -29,19 +29,6 @@
             border-radius: 1rem;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
-        
-        @media (min-width: 1024px) {
-            .form-container {
-                grid-template-columns: 1fr 1.2fr;
-                gap: 1.5rem;
-            }
-            
-            .left-column {
-                display: flex;
-                flex-direction: column;
-                gap: 0.5rem; /* Espace réduit entre les sections */
-            }
-        }
     </style>
 </head>
 <body class="p-4 flex items-center justify-center">
@@ -59,11 +46,11 @@
 
         <!-- Formulaire d'inscription -->
         <div class="form-section p-8">
-            <form method="POST" action="{{ route('register') }}" class="form-container lg:grid">
+            <form method="POST" action="{{ route('register') }}">
                 @csrf
 
-                <div class="left-column">
-                    <!-- Informations personnelles -->
+                <div class="space-y-6">
+                    <!-- 1. Informations personnelles -->
                     <div class="bg-white rounded-xl p-6 border border-gray-200">
                         <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                             <i class="bi bi-person-fill mr-2 text-purple-600"></i>
@@ -142,7 +129,127 @@
                         </div>
                     </div>
 
-                    <!-- Sécurité -->
+                    <!-- 2. Informations de l'entreprise -->
+                    <div class="bg-white rounded-xl p-6 border border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                            <i class="bi bi-building-fill mr-2 text-purple-600"></i>
+                            Informations de votre entreprise
+                        </h3>
+                        
+                        <!-- Nom de l'entreprise -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Nom de l'entreprise *
+                            </label>
+                            <input type="text" 
+                                   name="nom_entreprise" 
+                                   id="nom_entreprise"
+                                   value="{{ old('nom_entreprise') }}"
+                                   class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200" 
+                                   placeholder="Nom de votre entreprise touristique"
+                                   required>
+                            @error('nom_entreprise')
+                                <p class="mt-2 text-sm text-red-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Type d'activité -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Type d'activité *
+                                </label>
+                                <select name="type_activite" id="type_activite" 
+                                        class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
+                                        required>
+                                    <option value="">Choisissez votre activité</option>
+                                    <option value="hotel" {{ old('type_activite') == 'hotel' ? 'selected' : '' }}>
+                                        Hôtel / Hébergement
+                                    </option>
+                                    <option value="restaurant" {{ old('type_activite') == 'restaurant' ? 'selected' : '' }}>
+                                        Restaurant / Restauration
+                                    </option>
+                                    <option value="transport" {{ old('type_activite') == 'transport' ? 'selected' : '' }}>
+                                        Transport touristique
+                                    </option>
+                                    <option value="activite" {{ old('type_activite') == 'activite' ? 'selected' : '' }}>
+                                        Activités & Attractions
+                                    </option>
+                                    <option value="autre" {{ old('type_activite') == 'autre' ? 'selected' : '' }}>
+                                        Autre
+                                    </option>
+                                </select>
+                                @error('type_activite')
+                                    <p class="mt-2 text-sm text-red-500">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Ville -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Ville
+                                </label>
+                                <input type="text" 
+                                       name="ville" 
+                                       id="ville"
+                                       value="{{ old('ville') }}"
+                                       class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200" 
+                                       placeholder="Ville de votre entreprise">
+                                @error('ville')
+                                    <p class="mt-2 text-sm text-red-500">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <!-- Adresse -->
+                        <div class="mt-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Adresse complète
+                            </label>
+                            <input type="text" 
+                                   name="adresse" 
+                                   id="adresse"
+                                   value="{{ old('adresse') }}"
+                                   class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200" 
+                                   placeholder="Adresse complète de votre entreprise">
+                            @error('adresse')
+                                <p class="mt-2 text-sm text-red-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mt-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Description de votre activité
+                            </label>
+                            <textarea name="description" 
+                                      id="description"
+                                      rows="4"
+                                      class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 resize-none" 
+                                      placeholder="Décrivez votre entreprise et vos services touristiques...">{{ old('description') }}</textarea>
+                            @error('description')
+                                <p class="mt-2 text-sm text-red-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Site web -->
+                        <div class="mt-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Site web (optionnel)
+                            </label>
+                            <input type="url" 
+                                   name="site_web" 
+                                   id="site_web"
+                                   value="{{ old('site_web') }}"
+                                   class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200" 
+                                   placeholder="https://votre-site-web.com">
+                            @error('site_web')
+                                <p class="mt-2 text-sm text-red-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- 3. Sécurité -->
                     <div class="bg-white rounded-xl p-6 border border-gray-200">
                         <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                             <i class="bi bi-lock-fill mr-2 text-purple-600"></i>
@@ -225,13 +332,13 @@
 
                     <!-- Bouton de soumission -->
                     <button type="submit" 
-                            class="w-full bg-purple-600 text-white font-semibold py-4 px-6 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 transition duration-200 shadow-md mt-2">
+                            class="w-full bg-purple-600 text-white font-semibold py-4 px-6 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 transition duration-200 shadow-md">
                         <i class="bi bi-person-plus-fill mr-2"></i>
                         Inscription
                     </button>
 
                     <!-- Lien vers la connexion -->
-                    <div class="mt-4 text-center">
+                    <div class="text-center">
                         <p class="text-gray-600">
                             Déjà un compte ? 
                             <a href="{{ route('login') }}" 
@@ -242,128 +349,8 @@
                     </div>
                 </div>
 
-                <!-- Informations de l'entreprise -->
-                <div class="bg-white rounded-xl p-6 border border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                        <i class="bi bi-building-fill mr-2 text-purple-600"></i>
-                        Informations de votre entreprise
-                    </h3>
-                    
-                    <!-- Nom de l'entreprise -->
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Nom de l'entreprise *
-                        </label>
-                        <input type="text" 
-                               name="nom_entreprise" 
-                               id="nom_entreprise"
-                               value="{{ old('nom_entreprise') }}"
-                               class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200" 
-                               placeholder="Nom de votre entreprise touristique"
-                               required>
-                        @error('nom_entreprise')
-                            <p class="mt-2 text-sm text-red-500">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Type d'activité -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Type d'activité *
-                            </label>
-                            <select name="type_activite" id="type_activite" 
-                                    class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
-                                    required>
-                                <option value="">Choisissez votre activité</option>
-                                <option value="hotel" {{ old('type_activite') == 'hotel' ? 'selected' : '' }}>
-                                    Hôtel / Hébergement
-                                </option>
-                                <option value="restaurant" {{ old('type_activite') == 'restaurant' ? 'selected' : '' }}>
-                                    Restaurant / Restauration
-                                </option>
-                                <option value="transport" {{ old('type_activite') == 'transport' ? 'selected' : '' }}>
-                                    Transport touristique
-                                </option>
-                                <option value="activite" {{ old('type_activite') == 'activite' ? 'selected' : '' }}>
-                                    Activités & Attractions
-                                </option>
-                                <option value="autre" {{ old('type_activite') == 'autre' ? 'selected' : '' }}>
-                                    Autre
-                                </option>
-                            </select>
-                            @error('type_activite')
-                                <p class="mt-2 text-sm text-red-500">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- Ville -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Ville
-                            </label>
-                            <input type="text" 
-                                   name="ville" 
-                                   id="ville"
-                                   value="{{ old('ville') }}"
-                                   class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200" 
-                                   placeholder="Ville de votre entreprise">
-                            @error('ville')
-                                <p class="mt-2 text-sm text-red-500">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <!-- Adresse -->
-                    <div class="mt-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Adresse complète
-                        </label>
-                        <input type="text" 
-                               name="adresse" 
-                               id="adresse"
-                               value="{{ old('adresse') }}"
-                               class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200" 
-                               placeholder="Adresse complète de votre entreprise">
-                        @error('adresse')
-                            <p class="mt-2 text-sm text-red-500">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Description -->
-                    <div class="mt-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Description de votre activité
-                        </label>
-                        <textarea name="description" 
-                                  id="description"
-                                  rows="4"
-                                  class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 resize-none" 
-                                  placeholder="Décrivez votre entreprise et vos services touristiques...">{{ old('description') }}</textarea>
-                        @error('description')
-                            <p class="mt-2 text-sm text-red-500">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Site web -->
-                    <div class="mt-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Site web (optionnel)
-                        </label>
-                        <input type="url" 
-                               name="site_web" 
-                               id="site_web"
-                               value="{{ old('site_web') }}"
-                               class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200" 
-                               placeholder="https://votre-site-web.com">
-                        @error('site_web')
-                            <p class="mt-2 text-sm text-red-500">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
-
                 <!-- Messages d'erreur globaux -->
-                @if ($errors->any() && !in_array(array_keys($errors->messages())[0] ?? '', ['nom', 'prenom', 'email', 'password', 'nom_entreprise', 'type_activite', 'terms']))
+                @if ($errors->any())
                     <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mt-6">
                         <h4 class="font-medium mb-2">Erreurs dans le formulaire :</h4>
                         <ul class="list-disc list-inside text-sm">

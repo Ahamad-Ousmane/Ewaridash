@@ -3,27 +3,50 @@
 @section('title', 'Dashboard Admin - EWARI')
 @section('page-title', 'Dashboard Admin')
 
+@push('styles')
+<!-- Police Exile -->
+<link href="https://fonts.googleapis.com/css2?family=Exile&display=swap" rel="stylesheet">
+<!-- Police Montserrat -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<style>
+    /* Application des polices */
+    .app-title {
+        font-family: 'Exile', cursive;
+        letter-spacing: 1px;
+    }
+    
+    body {
+        font-family: 'Montserrat', sans-serif;
+    }
+    
+    /* Animation pour les cartes */
+    .card-hover {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .card-hover:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+</style>
+@endpush
+
 @section('sidebar')
 <!-- Admin Navigation -->
 <a href="{{ route('admin.dashboard') }}" class="nav-link-active flex items-center px-4 py-3 text-sm font-medium rounded-xl text-white">
-    <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4M8 7h8"></path>
-    </svg>
+    <i class="bi bi-grid mr-3"></i>
     Dashboard
 </a>
 
 <a href="{{ route('admin.acteurs.index') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-xl text-gray-300 hover:bg-gray-700 hover:text-white transition-colors">
-    <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-    </svg>
+    <i class="bi bi-people mr-3"></i>
     Acteurs Touristiques
 </a>
 
 <a href="{{ route('admin.infrastructures.index') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-xl text-gray-300 hover:bg-gray-700 hover:text-white transition-colors">
-    <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-    </svg>
+    <i class="bi bi-building mr-3"></i>
     Infrastructures
 </a>
 @endsection
@@ -36,15 +59,13 @@
         <div class="bg-white rounded-2xl shadow-sm p-6 card-hover border border-gray-100">
             <div class="flex items-center">
                 <div class="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600">
-                    <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                    </svg>
+                    <i class="bi bi-people-fill text-white text-lg"></i>
                 </div>
                 <div class="ml-4">
                     <p class="text-sm font-medium text-gray-500">Total Acteurs</p>
                     <p class="text-2xl font-bold text-gray-900">{{ $stats['total_acteurs'] }}</p>
                     <div class="flex items-center mt-1">
-                        <span class="text-xs text-green-600 font-medium">{{ $stats['active_users'] }} actifs</span>
+                        <span class="text-xs text-green-600 font-medium">{{ $stats['active_acteurs'] }} actifs</span>
                     </div>
                 </div>
             </div>
@@ -54,9 +75,7 @@
         <div class="bg-white rounded-2xl shadow-sm p-6 card-hover border border-gray-100">
             <div class="flex items-center">
                 <div class="p-3 rounded-xl bg-gradient-to-br from-green-500 to-green-600">
-                    <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                    </svg>
+                    <i class="bi bi-building text-white text-lg"></i>
                 </div>
                 <div class="ml-4">
                     <p class="text-sm font-medium text-gray-500">Infrastructures</p>
@@ -72,18 +91,16 @@
         <div class="bg-white rounded-2xl shadow-sm p-6 card-hover border border-gray-100">
             <div class="flex items-center">
                 <div class="p-3 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600">
-                    <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                    </svg>
+                    <i class="bi bi-bar-chart-line text-white text-lg"></i>
                 </div>
                 <div class="ml-4">
                     <p class="text-sm font-medium text-gray-500">Taux d'Activité</p>
                     <p class="text-2xl font-bold text-gray-900">
-                        {{ $stats['total_acteurs'] > 0 ? round(($stats['active_acteurs'] / $stats['total_acteurs']) * 100) : 0 }}%
+                        {{ $stats['taux_activite'] }}%
                     </p>
                     <div class="flex items-center mt-1">
                         <div class="w-12 bg-gray-200 rounded-full h-1">
-                            <div class="bg-purple-600 h-1 rounded-full" style="width: {{ $stats['total_acteurs'] > 0 ? round(($stats['active_acteurs'] / $stats['total_acteurs']) * 100) : 0 }}%"></div>
+                            <div class="bg-purple-600 h-1 rounded-full" style="width: {{ $stats['taux_activite'] }}%"></div>
                         </div>
                     </div>
                 </div>
@@ -94,18 +111,14 @@
         <div class="bg-white rounded-2xl shadow-sm p-6 card-hover border border-gray-100">
             <div class="flex items-center">
                 <div class="p-3 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600">
-                    <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                    </svg>
+                    <i class="bi bi-graph-up-arrow text-white text-lg"></i>
                 </div>
                 <div class="ml-4">
                     <p class="text-sm font-medium text-gray-500">Croissance</p>
-                    <p class="text-2xl font-bold text-gray-900">+12%</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $stats['croissance'] }}%</p>
                     <div class="flex items-center mt-1">
-                        <svg class="w-3 h-3 text-green-500 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
-                        </svg>
-                        <span class="text-xs text-green-600 font-medium">Ce mois</span>
+                        <i class="bi bi-arrow-{{ $stats['croissance'] >= 0 ? 'up' : 'down' }} text-{{ $stats['croissance'] >= 0 ? 'green' : 'red' }}-500 text-xs mr-1"></i>
+                        <span class="text-xs text-{{ $stats['croissance'] >= 0 ? 'green' : 'red' }}-600 font-medium">Ce mois</span>
                     </div>
                 </div>
             </div>
@@ -117,11 +130,9 @@
         <!-- Activity Chart -->
         <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
             <div class="flex items-center justify-between mb-6">
-                <h3 class="text-lg font-semibold text-gray-900">Activité de la Plateforme</h3>
+                <h3 class="text-lg font-semibold text-gray-900">Activité de la Plateforme (30 derniers jours)</h3>
                 <div class="flex space-x-2">
-                    <button class="px-3 py-1 text-xs font-medium bg-indigo-100 text-indigo-700 rounded-full">7j</button>
-                    <button class="px-3 py-1 text-xs font-medium text-gray-500 hover:bg-gray-100 rounded-full">30j</button>
-                    <button class="px-3 py-1 text-xs font-medium text-gray-500 hover:bg-gray-100 rounded-full">90j</button>
+                    <button data-period="30" class="activity-period-btn px-3 py-1 text-xs font-medium bg-indigo-100 text-indigo-700 rounded-full">30j</button>
                 </div>
             </div>
             <div class="h-64">
@@ -152,7 +163,7 @@
                 <div class="flex items-center justify-between">
                     <h3 class="text-lg font-semibold text-gray-900">Nouveaux Acteurs</h3>
                     <a href="{{ route('admin.acteurs.index') }}" class="text-sm text-indigo-600 hover:text-indigo-700 font-medium">
-                        Voir tout →
+                        Voir tout <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
             </div>
@@ -176,9 +187,7 @@
                     </div>
                     @empty
                     <div class="text-center py-8">
-                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                        </svg>
+                        <i class="bi bi-people text-gray-400 text-4xl mx-auto"></i>
                         <p class="mt-2 text-sm text-gray-500">Aucun acteur récent</p>
                     </div>
                     @endforelse
@@ -192,7 +201,7 @@
                 <div class="flex items-center justify-between">
                     <h3 class="text-lg font-semibold text-gray-900">Nouvelles Infrastructures</h3>
                     <a href="{{ route('admin.infrastructures.index') }}" class="text-sm text-indigo-600 hover:text-indigo-700 font-medium">
-                        Voir tout →
+                        Voir tout <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
             </div>
@@ -203,20 +212,13 @@
                         <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center">
                             @switch($infrastructure->type)
                                 @case('hotel')
-                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                                    </svg>
+                                    <i class="bi bi-building text-white"></i>
                                     @break
                                 @case('restaurant')
-                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
-                                    </svg>
+                                    <i class="bi bi-cup-hot text-white"></i>
                                     @break
                                 @default
-                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    </svg>
+                                    <i class="bi bi-geo-alt text-white"></i>
                             @endswitch
                         </div>
                         <div class="flex-1 min-w-0">
@@ -232,9 +234,7 @@
                     </div>
                     @empty
                     <div class="text-center py-8">
-                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                        </svg>
+                        <i class="bi bi-building text-gray-400 text-4xl mx-auto"></i>
                         <p class="mt-2 text-sm text-gray-500">Aucune infrastructure récente</p>
                     </div>
                     @endforelse
@@ -242,63 +242,18 @@
             </div>
         </div>
     </div>
-
-    <!-- Quick Actions -->
-    <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
-        <h3 class="text-lg font-semibold text-gray-900 mb-6">Actions Rapides</h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <a href="{{ route('admin.acteurs.create') }}" class="group flex items-center justify-center p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl hover:from-blue-100 hover:to-indigo-100 transition-all duration-200 border border-blue-200">
-                <div class="text-center">
-                    <div class="w-12 h-12 bg-blue-500 rounded-xl mx-auto mb-3 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                        </svg>
-                    </div>
-                    <p class="text-sm font-semibold text-blue-900">Ajouter un Acteur</p>
-                    <p class="text-xs text-blue-600 mt-1">Créer un nouveau compte</p>
-                </div>
-            </a>
-
-            <button class="group flex items-center justify-center p-6 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl hover:from-green-100 hover:to-emerald-100 transition-all duration-200 border border-green-200">
-                <div class="text-center">
-                    <div class="w-12 h-12 bg-green-500 rounded-xl mx-auto mb-3 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                        </svg>
-                    </div>
-                    <p class="text-sm font-semibold text-green-900">Générer Rapport</p>
-                    <p class="text-xs text-green-600 mt-1">Exporter les données</p>
-                </div>
-            </button>
-
-            <button class="group flex items-center justify-center p-6 bg-gradient-to-br from-purple-50 to-violet-50 rounded-xl hover:from-purple-100 hover:to-violet-100 transition-all duration-200 border border-purple-200">
-                <div class="text-center">
-                    <div class="w-12 h-12 bg-purple-500 rounded-xl mx-auto mb-3 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        </svg>
-                    </div>
-                    <p class="text-sm font-semibold text-purple-900">Paramètres</p>
-                    <p class="text-xs text-purple-600 mt-1">Configuration système</p>
-                </div>
-            </button>
-        </div>
-    </div>
 </div>
 @endsection
 
 @push('scripts')
 <script>
-// Activity Chart
-const activityCtx = document.getElementById('activityChart').getContext('2d');
-new Chart(activityCtx, {
-    type: 'line',
-    data: {
-        labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+// Données dynamiques passées depuis le contrôleur
+const chartData = {
+    activity: {
+        labels: @json($chartData['activity']['labels']),
         datasets: [{
             label: 'Nouvelles Inscriptions',
-            data: [12, 19, 8, 15, 22, 8, 5],
+            data: @json($chartData['activity']['inscriptions']),
             borderColor: 'rgb(99, 102, 241)',
             backgroundColor: 'rgba(99, 102, 241, 0.1)',
             borderWidth: 3,
@@ -306,7 +261,7 @@ new Chart(activityCtx, {
             tension: 0.4
         }, {
             label: 'Infrastructures Ajoutées',
-            data: [8, 12, 15, 10, 18, 12, 8],
+            data: @json($chartData['activity']['infrastructures']),
             borderColor: 'rgb(34, 197, 94)',
             backgroundColor: 'rgba(34, 197, 94, 0.1)',
             borderWidth: 3,
@@ -314,58 +269,74 @@ new Chart(activityCtx, {
             tension: 0.4
         }]
     },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: 'bottom',
-                labels: {
-                    usePointStyle: true,
-                    padding: 20
-                }
-            }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                grid: {
-                    color: 'rgba(0, 0, 0, 0.05)'
+    infrastructure: {
+        labels: @json($chartData['infrastructure_types']['labels']),
+        datasets: [{
+            data: @json($chartData['infrastructure_types']['data']),
+            backgroundColor: [
+                'rgb(59, 130, 246)',
+                'rgb(34, 197, 94)',
+                'rgb(251, 191, 36)',
+                'rgb(168, 85, 247)',
+                'rgb(239, 68, 68)'
+            ],
+            borderWidth: 0,
+            cutout: '70%'
+        }]
+    }
+};
+
+// Activity Chart
+let activityChart;
+const initActivityChart = () => {
+    const activityCtx = document.getElementById('activityChart').getContext('2d');
+    activityChart = new Chart(activityCtx, {
+        type: 'line',
+        data: chartData.activity,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 20
+                    }
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
                 }
             },
-            x: {
-                grid: {
-                    display: false
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            },
+            elements: {
+                point: {
+                    radius: 0,
+                    hoverRadius: 8
                 }
             }
-        },
-        elements: {
-            point: {
-                radius: 0,
-                hoverRadius: 8
-            }
         }
-    }
-});
+    });
+};
 
 // Infrastructure Types Chart
 const infraCtx = document.getElementById('infrastructureChart').getContext('2d');
 new Chart(infraCtx, {
     type: 'doughnut',
-    data: {
-        labels: ['Hôtels', 'Restaurants', 'Plages', 'Transport'],
-        datasets: [{
-            data: [35, 28, 22, 15],
-            backgroundColor: [
-                'rgb(59, 130, 246)',
-                'rgb(34, 197, 94)',
-                'rgb(251, 191, 36)',
-                'rgb(168, 85, 247)'
-            ],
-            borderWidth: 0,
-            cutout: '70%'
-        }]
-    },
+    data: chartData.infrastructure,
     options: {
         responsive: true,
         maintainAspectRatio: false,
@@ -376,9 +347,50 @@ new Chart(infraCtx, {
                     usePointStyle: true,
                     padding: 20
                 }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        const label = context.label || '';
+                        const value = context.raw || 0;
+                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                        const percentage = Math.round((value / total) * 100);
+                        return `${label}: ${value} (${percentage}%)`;
+                    }
+                }
             }
         }
     }
+});
+
+// Initialisation du graphique d'activité
+initActivityChart();
+
+// Gestion du changement de période pour l'activité
+document.querySelectorAll('.activity-period-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const period = this.getAttribute('data-period');
+        
+        // Mettre à jour le style des boutons
+        document.querySelectorAll('.activity-period-btn').forEach(b => {
+            b.classList.remove('bg-indigo-100', 'text-indigo-700');
+            b.classList.add('text-gray-500', 'hover:bg-gray-100');
+        });
+        this.classList.add('bg-indigo-100', 'text-indigo-700');
+        this.classList.remove('text-gray-500', 'hover:bg-gray-100');
+        
+        // Charger les nouvelles données (vous pouvez implémenter une requête AJAX ici)
+        // Pour l'exemple, nous utilisons les mêmes données
+        // En pratique, vous feriez:
+        // fetch(`/admin/dashboard/chart-data?period=${period}`)
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         activityChart.data.labels = data.labels;
+        //         activityChart.data.datasets[0].data = data.inscriptions;
+        //         activityChart.data.datasets[1].data = data.infrastructures;
+        //         activityChart.update();
+        //     });
+    });
 });
 </script>
 @endpush
