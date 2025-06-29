@@ -3,46 +3,113 @@
 @section('title', 'Ajouter une Infrastructure - EWARI')
 @section('page-title', 'Nouvelle Infrastructure')
 
+@push('styles')
+<!-- Police Exile -->
+<link href="https://fonts.googleapis.com/css2?family=Exile&display=swap" rel="stylesheet">
+<!-- Police Montserrat -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<style>
+    /* Application des polices */
+    .app-title {
+        font-family: 'Exile', cursive;
+        letter-spacing: 1px;
+    }
+    
+    body {
+        font-family: 'Montserrat', sans-serif;
+    }
+    
+    /* Animation pour les cartes */
+    .card-hover {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .card-hover:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Style des boutons d'action */
+    .action-btn {
+        @apply p-2 rounded-lg hover:bg-gray-100 transition-colors;
+    }
+    .action-btn.view {
+        @apply text-indigo-600 hover:text-indigo-800;
+    }
+    .action-btn.edit {
+        @apply text-gray-600 hover:text-gray-800;
+    }
+    .action-btn.delete {
+        @apply text-red-600 hover:text-red-800;
+    }
+
+    /* Style pour les zones de drag & drop */
+    .drop-zone {
+        transition: all 0.3s ease;
+    }
+    .drop-zone.active {
+        border-color: #6366f1;
+        background-color: #eef2ff;
+    }
+</style>
+@endpush
+
 @section('sidebar')
 <!-- Acteur Navigation -->
 <a href="{{ route('acteur.dashboard') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-xl text-gray-300 hover:bg-gray-700 hover:text-white transition-colors">
-    <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4M8 7h8"></path>
-    </svg>
+    <i class="bi bi-grid mr-3"></i>
     Dashboard
 </a>
 
 <a href="{{ route('acteur.profile') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-xl text-gray-300 hover:bg-gray-700 hover:text-white transition-colors">
-    <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-    </svg>
+    <i class="bi bi-person mr-3"></i>
     Mon Profil
 </a>
 
 <a href="{{ route('acteur.infrastructures.index') }}" class="nav-link-active flex items-center px-4 py-3 text-sm font-medium rounded-xl text-white">
-    <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-    </svg>
+    <i class="bi bi-building mr-3"></i>
     Mes Infrastructures
 </a>
 @endsection
 
 @section('content')
-<div class="p-6 max-w-4xl mx-auto">
+<div class="p-6 space-y-6">
+    <!-- Messages d'alerte -->
+    @if(session('success'))
+    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl mb-6">
+        <div class="flex items-center">
+            <i class="bi bi-check-circle mr-2"></i>
+            {{ session('success') }}
+        </div>
+    </div>
+    @endif
+
+    @if(session('error'))
+    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6">
+        <div class="flex items-center">
+            <i class="bi bi-exclamation-triangle mr-2"></i>
+            {{ session('error') }}
+        </div>
+    </div>
+    @endif
+
     <!-- Breadcrumb -->
     <nav class="mb-6">
         <ol class="flex items-center space-x-2 text-sm text-gray-500">
-            <li><a href="{{ route('acteur.dashboard') }}" class="hover:text-indigo-600">Dashboard</a></li>
-            <li><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></li>
+            <li><a href="{{ route('acteur.dashboard') }}" class="hover:text-indigo-600 flex items-center">
+                <i class="bi bi-house-door mr-1"></i> Dashboard
+            </a></li>
+            <li><i class="bi bi-chevron-right text-gray-400"></i></li>
             <li><a href="{{ route('acteur.infrastructures.index') }}" class="hover:text-indigo-600">Infrastructures</a></li>
-            <li><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></li>
+            <li><i class="bi bi-chevron-right text-gray-400"></i></li>
             <li class="text-gray-900 font-medium">Nouvelle</li>
         </ol>
     </nav>
 
     <!-- Header -->
-    <div class="bg-white rounded-2xl shadow-sm p-6 mb-6 border border-gray-100">
+    <div class="bg-white rounded-2xl shadow-sm p-6 mb-6 border border-gray-100 card-hover">
         <div class="flex items-center justify-between">
             <div>
                 <h1 class="text-2xl font-bold text-gray-900">Ajouter une Infrastructure</h1>
@@ -50,9 +117,7 @@
             </div>
             <div class="hidden sm:block">
                 <div class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                    </svg>
+                    <i class="bi bi-plus-lg text-white text-2xl"></i>
                 </div>
             </div>
         </div>
@@ -65,11 +130,9 @@
         
         <div class="space-y-6">
             <!-- Basic Information -->
-            <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+            <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 card-hover">
                 <h2 class="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
+                    <i class="bi bi-info-circle text-indigo-600 mr-2"></i>
                     Informations Générales
                 </h2>
                 
@@ -77,10 +140,10 @@
                     <!-- Nom -->
                     <div class="md:col-span-2">
                         <label for="nom" class="block text-sm font-semibold text-gray-700 mb-2">
-                            Nom de l'infrastructure *
+                            Nom de l'infrastructure <span class="text-red-500">*</span>
                         </label>
                         <input type="text" id="nom" name="nom" required value="{{ old('nom') }}"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-indigo-500 focus:border-indigo-500 @error('nom') border-red-300 @enderror"
                                placeholder="Ex: Hôtel Paradise, Restaurant Le Gourmet...">
                         @error('nom')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
@@ -90,15 +153,15 @@
                     <!-- Type -->
                     <div>
                         <label for="type" class="block text-sm font-semibold text-gray-700 mb-2">
-                            Type d'infrastructure *
+                            Type d'infrastructure <span class="text-red-500">*</span>
                         </label>
                         <select id="type" name="type" x-model="selectedType" required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200">
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-indigo-500 focus:border-indigo-500 @error('type') border-red-300 @enderror">
                             <option value="">Sélectionner un type</option>
-                            <option value="hotel">🏨 Hôtel</option>
-                            <option value="restaurant">🍽️ Restaurant</option>
-                            <option value="plage">🏖️ Espace Plage</option>
-                            <option value="transport">🚗 Service de Transport</option>
+                            <option value="hotel" {{ old('type') === 'hotel' ? 'selected' : '' }}>🏨 Hôtel</option>
+                            <option value="restaurant" {{ old('type') === 'restaurant' ? 'selected' : '' }}>🍽️ Restaurant</option>
+                            <option value="plage" {{ old('type') === 'plage' ? 'selected' : '' }}>🏖️ Espace Plage</option>
+                            <option value="transport" {{ old('type') === 'transport' ? 'selected' : '' }}>🚗 Service de Transport</option>
                         </select>
                         @error('type')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
@@ -108,10 +171,10 @@
                     <!-- Localisation -->
                     <div>
                         <label for="localisation" class="block text-sm font-semibold text-gray-700 mb-2">
-                            Localisation *
+                            Localisation <span class="text-red-500">*</span>
                         </label>
                         <input type="text" id="localisation" name="localisation" required value="{{ old('localisation') }}"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-indigo-500 focus:border-indigo-500 @error('localisation') border-red-300 @enderror"
                                placeholder="Ex: Cotonou, Quartier Fidjrossè">
                         @error('localisation')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
@@ -121,10 +184,10 @@
                     <!-- Description -->
                     <div class="md:col-span-2">
                         <label for="description" class="block text-sm font-semibold text-gray-700 mb-2">
-                            Description *
+                            Description <span class="text-red-500">*</span>
                         </label>
                         <textarea id="description" name="description" rows="4" required
-                                  class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-indigo-500 focus:border-indigo-500 @error('description') border-red-300 @enderror"
                                   placeholder="Décrivez votre infrastructure, ses services, ses particularités...">{{ old('description') }}</textarea>
                         @error('description')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
@@ -134,11 +197,9 @@
             </div>
 
             <!-- Characteristics -->
-            <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+            <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 card-hover">
                 <h2 class="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
+                    <i class="bi bi-list-check text-indigo-600 mr-2"></i>
                     Caractéristiques
                 </h2>
 
@@ -149,14 +210,14 @@
                             Prix (FCFA)
                         </label>
                         <div class="relative">
-                            <input type="number" id="prix" name="prix" value="{{ old('prix') }}" min="0"
-                                   class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                            <input type="number" id="prix" name="caracteristiques[prix]" value="{{ old('caracteristiques.prix') }}" min="0"
+                                   class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-indigo-500 focus:border-indigo-500"
                                    placeholder="50000">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <div class="absolute inset-y-0 left-0 pl-1 flex items-center pointer-events-none">
                                 <span class="text-gray-500 font-medium">FCFA</span>
                             </div>
                         </div>
-                        @error('prix')
+                        @error('caracteristiques.prix')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
@@ -166,10 +227,10 @@
                         <label for="capacite" class="block text-sm font-semibold text-gray-700 mb-2">
                             Capacité
                         </label>
-                        <input type="number" id="capacite" name="capacite" value="{{ old('capacite') }}" min="1"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                        <input type="number" id="capacite" name="caracteristiques[capacite]" value="{{ old('caracteristiques.capacite') }}" min="1"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-indigo-500 focus:border-indigo-500"
                                placeholder="100">
-                        @error('capacite')
+                        @error('caracteristiques.capacite')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
@@ -182,7 +243,7 @@
                         <div x-data="{ newAmenity: '' }" class="space-y-3">
                             <div class="flex space-x-2">
                                 <input type="text" x-model="newAmenity" @keydown.enter.prevent="addAmenity(newAmenity); newAmenity = '';"
-                                       class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                       class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
                                        placeholder="Ex: WiFi gratuit, Piscine, Climatisation...">
                                 <button type="button" @click="addAmenity(newAmenity); newAmenity = '';"
                                         class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
@@ -194,16 +255,14 @@
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-indigo-100 text-indigo-800">
                                         <span x-text="amenity"></span>
                                         <button type="button" @click="removeAmenity(index)" class="ml-2 text-indigo-600 hover:text-indigo-800">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                            </svg>
+                                            <i class="bi bi-x"></i>
                                         </button>
                                     </span>
                                 </template>
                             </div>
-                            <input type="hidden" name="amenities" :value="amenitiesList.join(',')">
+                            <input type="hidden" name="caracteristiques[amenities]" :value="JSON.stringify(amenitiesList)">
                         </div>
-                        @error('amenities')
+                        @error('caracteristiques.amenities')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
@@ -211,11 +270,9 @@
             </div>
 
             <!-- Images Upload -->
-            <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+            <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 card-hover">
                 <h2 class="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 002 2z"></path>
-                    </svg>
+                    <i class="bi bi-images text-indigo-600 mr-2"></i>
                     Images de l'Infrastructure
                 </h2>
 
@@ -228,12 +285,10 @@
                         <input type="file" id="images" name="images[]" multiple accept="image/*" class="hidden"
                                @change="handleFileSelect($event)">
                         <label for="images" 
-                               class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200"
-                               :class="dragOver ? 'border-indigo-500 bg-indigo-50' : 'border-gray-300 hover:border-indigo-400 hover:bg-gray-50'">
+                               class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 drop-zone"
+                               :class="dragOver ? 'active' : ''">
                             <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                <svg class="w-8 h-8 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                </svg>
+                                <i class="bi bi-cloud-arrow-up text-gray-400 text-2xl mb-3"></i>
                                 <p class="mb-2 text-sm text-gray-500">
                                     <span class="font-semibold">Cliquez pour sélectionner</span> ou glissez-déposez
                                 </p>
@@ -258,9 +313,7 @@
                                     <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center">
                                         <button type="button" @click="removeImage(index)"
                                                 class="w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                            </svg>
+                                            <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
                                     <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-75 text-white text-xs p-1 truncate">
@@ -278,12 +331,9 @@
             </div>
 
             <!-- Type-specific fields -->
-            <div x-show="selectedType" class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+            <div x-show="selectedType" class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 card-hover">
                 <h2 class="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                    </svg>
+                    <i class="bi bi-gear text-indigo-600 mr-2"></i>
                     Informations Spécifiques
                 </h2>
 
@@ -333,19 +383,19 @@
             </div>
 
             <!-- Submit Buttons -->
-            <div class="flex justify-between items-center">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
                 <a href="{{ route('acteur.infrastructures.index') }}" 
-                   class="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium">
+                   class="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium text-center">
                     Annuler
                 </a>
-                <div class="flex space-x-3">
+                <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
                     <button type="submit" name="action" value="draft"
                             class="px-6 py-3 border border-indigo-300 text-indigo-700 rounded-xl hover:bg-indigo-50 transition-colors font-medium">
                         Sauvegarder comme brouillon
                     </button>
                     <button type="submit" name="action" value="publish"
-                            class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-105">
-                        Publier l'Infrastructure
+                            class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all font-medium shadow hover:shadow-md">
+                        <i class="bi bi-check-circle mr-2"></i> Publier l'Infrastructure
                     </button>
                 </div>
             </div>
@@ -353,6 +403,7 @@
     </form>
 </div>
 
+@push('scripts')
 <script>
 function infrastructureForm() {
     return {
@@ -423,4 +474,6 @@ function infrastructureForm() {
     }
 }
 </script>
+@endpush
+
 @endsection

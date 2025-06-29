@@ -3,27 +3,50 @@
 @section('title', 'Dashboard Acteur - EWARI')
 @section('page-title', 'Mon Dashboard')
 
+@push('styles')
+<!-- Police Exile -->
+<link href="https://fonts.googleapis.com/css2?family=Exile&display=swap" rel="stylesheet">
+<!-- Police Montserrat -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<style>
+    /* Application des polices */
+    .app-title {
+        font-family: 'Exile', cursive;
+        letter-spacing: 1px;
+    }
+    
+    body {
+        font-family: 'Montserrat', sans-serif;
+    }
+    
+    /* Animation pour les cartes */
+    .card-hover {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .card-hover:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+</style>
+@endpush
+
 @section('sidebar')
 <!-- Acteur Navigation -->
 <a href="{{ route('acteur.dashboard') }}" class="nav-link-active flex items-center px-4 py-3 text-sm font-medium rounded-xl text-white">
-    <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4M8 7h8"></path>
-    </svg>
+    <i class="bi bi-grid mr-3"></i>
     Dashboard
 </a>
 
 <a href="{{ route('acteur.profile') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-xl text-gray-300 hover:bg-gray-700 hover:text-white transition-colors">
-    <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-    </svg>
+    <i class="bi bi-person mr-3"></i>
     Mon Profil
 </a>
 
 <a href="{{ route('acteur.infrastructures.index') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-xl text-gray-300 hover:bg-gray-700 hover:text-white transition-colors">
-    <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-    </svg>
+    <i class="bi bi-building mr-3"></i>
     Mes Infrastructures
 </a>
 @endsection
@@ -36,7 +59,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-2xl font-bold text-white">
-                        Bonjour, {{ $acteur ? $acteur->nom_entreprise : Auth::user()->nom }} ! 👋
+                        Bonjour, {{ $acteur ? $acteur->nom_entreprise : Auth::user()->nom }} ! <i class="bi bi-emoji-smile"></i>
                     </h1>
                     <p class="mt-2 text-indigo-100 text-lg">
                         Gérez vos infrastructures touristiques en toute simplicité
@@ -44,9 +67,7 @@
                     @if(!$acteur)
                     <div class="mt-4">
                         <a href="{{ route('acteur.profile') }}" class="inline-flex items-center px-4 py-2 bg-white text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors font-medium">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                            </svg>
+                            <i class="bi bi-plus-circle mr-2"></i>
                             Compléter mon profil
                         </a>
                     </div>
@@ -70,9 +91,7 @@
             <div class="relative">
                 <div class="flex items-center justify-between">
                     <div class="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600">
-                        <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                        </svg>
+                        <i class="bi bi-building text-white"></i>
                     </div>
                     <span class="text-2xl font-bold text-gray-900">{{ $stats['total_infrastructures'] }}</span>
                 </div>
@@ -91,9 +110,7 @@
             <div class="relative">
                 <div class="flex items-center justify-between">
                     <div class="p-3 rounded-xl bg-gradient-to-br from-green-500 to-green-600">
-                        <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path>
-                        </svg>
+                        <i class="bi bi-building text-white"></i>
                     </div>
                     <span class="text-2xl font-bold text-gray-900">{{ $stats['hotels'] }}</span>
                 </div>
@@ -112,9 +129,7 @@
             <div class="relative">
                 <div class="flex items-center justify-between">
                     <div class="p-3 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600">
-                        <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
-                        </svg>
+                        <i class="bi bi-cup-hot text-white"></i>
                     </div>
                     <span class="text-2xl font-bold text-gray-900">{{ $stats['restaurants'] }}</span>
                 </div>
@@ -133,10 +148,7 @@
             <div class="relative">
                 <div class="flex items-center justify-between">
                     <div class="p-3 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600">
-                        <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        </svg>
+                        <i class="bi bi-geo-alt text-white"></i>
                     </div>
                     <span class="text-2xl font-bold text-gray-900">{{ $stats['plages'] + $stats['transports'] }}</span>
                 </div>
@@ -159,9 +171,7 @@
                     <h3 class="text-lg font-semibold text-gray-900">Mes Infrastructures Récentes</h3>
                     <a href="{{ route('acteur.infrastructures.index') }}" class="text-sm text-indigo-600 hover:text-indigo-700 font-medium flex items-center">
                         Voir tout
-                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                        </svg>
+                        <i class="bi bi-arrow-right ml-1"></i>
                     </a>
                 </div>
             </div>
@@ -176,20 +186,13 @@
                         <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center">
                             @switch($infrastructure->type)
                                 @case('hotel')
-                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                                    </svg>
+                                    <i class="bi bi-building text-white"></i>
                                     @break
                                 @case('restaurant')
-                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
-                                    </svg>
+                                    <i class="bi bi-cup-hot text-white"></i>
                                     @break
                                 @default
-                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    </svg>
+                                    <i class="bi bi-geo-alt text-white"></i>
                             @endswitch
                         </div>
                         @endif
@@ -218,16 +221,12 @@
                 </div>
                 @else
                 <div class="text-center py-12">
-                    <svg class="mx-auto h-16 w-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                    </svg>
+                    <i class="bi bi-building text-gray-400 text-4xl mx-auto"></i>
                     <h3 class="mt-4 text-lg font-medium text-gray-900">Aucune infrastructure</h3>
                     <p class="mt-2 text-sm text-gray-500">Commencez par ajouter votre première infrastructure touristique.</p>
                     <div class="mt-6">
                         <a href="{{ route('acteur.infrastructures.create') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                            </svg>
+                            <i class="bi bi-plus-circle mr-2"></i>
                             Ajouter une infrastructure
                         </a>
                     </div>
@@ -244,9 +243,7 @@
                 <div class="space-y-3">
                     <a href="{{ route('acteur.infrastructures.create') }}" class="flex items-center p-3 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl hover:from-indigo-100 hover:to-blue-100 transition-all duration-200 group">
                         <div class="w-10 h-10 bg-indigo-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                            </svg>
+                            <i class="bi bi-plus-lg text-white"></i>
                         </div>
                         <div class="ml-3">
                             <p class="text-sm font-medium text-gray-900">Nouvelle Infrastructure</p>
@@ -256,27 +253,13 @@
 
                     <a href="{{ route('acteur.profile') }}" class="flex items-center p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl hover:from-green-100 hover:to-emerald-100 transition-all duration-200 group">
                         <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                            </svg>
+                            <i class="bi bi-person text-white"></i>
                         </div>
                         <div class="ml-3">
                             <p class="text-sm font-medium text-gray-900">Mon Profil</p>
                             <p class="text-xs text-gray-500">Gérer mes informations</p>
                         </div>
                     </a>
-
-                    <button class="flex items-center p-3 bg-gradient-to-r from-purple-50 to-violet-50 rounded-xl hover:from-purple-100 hover:to-violet-100 transition-all duration-200 group w-full">
-                        <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                            </svg>
-                        </div>
-                        <div class="ml-3 text-left">
-                            <p class="text-sm font-medium text-gray-900">Statistiques</p>
-                            <p class="text-xs text-gray-500">Voir mes performances</p>
-                        </div>
-                    </button>
                 </div>
             </div>
 
@@ -292,19 +275,14 @@
                     
                     @if($acteur->adresse)
                     <div class="flex items-center text-sm text-gray-600">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        </svg>
+                        <i class="bi bi-geo-alt mr-2"></i>
                         {{ $acteur->adresse }}
                     </div>
                     @endif
 
                     @if($acteur->site_web)
                     <div class="flex items-center text-sm text-indigo-600">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
-                        </svg>
+                        <i class="bi bi-globe mr-2"></i>
                         <a href="{{ $acteur->site_web }}" target="_blank" class="hover:underline">{{ $acteur->site_web }}</a>
                     </div>
                     @endif
@@ -313,21 +291,40 @@
             @endif
 
             <!-- Tips -->
-            <div class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-2xl p-6 border border-yellow-200">
+            <div 
+                x-data="{
+                    conseils: [
+                        'Ajoutez des images de qualité à vos infrastructures pour attirer plus de visiteurs !',
+                        'Assurez-vous que vos informations de contact sont à jour.',
+                        'Mettez en avant les points forts uniques de votre site touristique.',
+                        'Partagez votre profil sur les réseaux sociaux pour plus de visibilité.',
+                        'Répondez aux avis pour montrer que vous êtes à l\'écoute des visiteurs.'
+                    ],
+                    index: 0,
+                    get conseilActuel() {
+                        return this.conseils[this.index];
+                    },
+                    suivant() {
+                        this.index = (this.index + 1) % this.conseils.length;
+                    },
+                    init() {
+                        setInterval(() => this.suivant(), 30000); // change toutes les 5 secondes
+                    }
+                }"
+                x-init="init"
+                class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-2xl p-6 border border-yellow-200 transition-all duration-500"
+            >
                 <div class="flex items-start">
                     <div class="flex-shrink-0">
-                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-                        </svg>
+                        <i class="bi bi-lightbulb text-yellow-600 text-xl"></i>
                     </div>
                     <div class="ml-3">
                         <h3 class="text-sm font-medium text-yellow-800">Conseil du jour</h3>
-                        <p class="text-sm text-yellow-700 mt-1">
-                            Ajoutez des images de qualité à vos infrastructures pour attirer plus de visiteurs !
-                        </p>
+                        <p class="text-sm text-yellow-700 mt-1" x-text="conseilActuel"></p>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 
@@ -336,10 +333,6 @@
     <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
         <div class="flex items-center justify-between mb-6">
             <h3 class="text-lg font-semibold text-gray-900">Répartition de mes Infrastructures</h3>
-            <div class="flex space-x-2">
-                <button class="px-3 py-1 text-xs font-medium bg-indigo-100 text-indigo-700 rounded-full">Vue</button>
-                <button class="px-3 py-1 text-xs font-medium text-gray-500 hover:bg-gray-100 rounded-full">Type</button>
-            </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="h-64">

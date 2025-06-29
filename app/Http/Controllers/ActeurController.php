@@ -9,11 +9,63 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Log;
 
 
 class ActeurController extends Controller
 {
     
+
+    public function infrastructures(Request $request)
+    {
+        $acteur = Auth::user()->acteurTouristique;
+        
+        // Commencer la requête avec les infrastructures de l'acteur
+        $query = $acteur->infrastructures();
+
+        // Filtrage par recherche
+        if ($request->filled('search')) {
+            $query->where('nom', 'like', '%' . $request->search . '%')
+                ->orWhere('description', 'like', '%' . $request->search . '%')
+                ->orWhere('localisation', 'like', '%' . $request->search . '%');
+        }
+
+        // Filtrage par type
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        // Filtrage par statut (actif/inactif)
+        if ($request->filled('status')) {
+            $isActive = $request->status === 'active';
+            $query->where('is_active', $isActive);
+        }
+
+        // Tri
+        switch ($request->get('sort', 'newest')) {
+            case 'oldest':
+                $query->orderBy('created_at', 'asc');
+                break;
+            case 'name_asc':
+                $query->orderBy('nom', 'asc');
+                break;
+            case 'name_desc':
+                $query->orderBy('nom', 'desc');
+                break;
+            case 'price_asc':
+                $query->orderByRaw("(caracteristiques->>'prix')::numeric asc");
+                break;
+            case 'price_desc':
+                $query->orderByRaw("(caracteristiques->>'prix')::numeric desc");
+                break;
+            default:
+                $query->latest();
+        }
+
+        $infrastructures = $query->paginate(12);
+
+        return view('acteur.infrastructures.index', compact('infrastructures'));
+    }
 
     public function dashboard()
 {
@@ -104,15 +156,6 @@ class ActeurController extends Controller
         return back()->with('success', 'Profil mis à jour avec succès.');
     }
 
-    public function infrastructures()
-    {
-        $acteur = Auth::user()->acteurTouristique;
-        $infrastructures = $acteur->infrastructures()
-            ->latest()
-            ->paginate(12);
-
-        return view('acteur.infrastructures.index', compact('infrastructures'));
-    }
 
     public function createInfrastructure()
     {
@@ -134,29 +177,29 @@ class ActeurController extends Controller
 
     $images = [];
     
-    \Log::info("🚀 Début upload images - Nombre: " . ($request->hasFile('images') ? count($request->file('images')) : 0));
+    Log::info("🚀 Début upload images - Nombre: " . ($request->hasFile('images') ? count($request->file('images')) : 0));
     
     if ($request->hasFile('images')) {
         foreach ($request->file('images') as $index => $image) {
-            \Log::info("📸 Image $index - Nom: " . $image->getClientOriginalName() . " - Taille: " . $image->getSize());
+            Log::info("📸 Image $index - Nom: " . $image->getClientOriginalName() . " - Taille: " . $image->getSize());
             
             try {
                 $path = $this->uploadToSupabase($image);
                 $images[] = $path;
-                \Log::info("✅ Image $index uploadée vers Supabase: $path");
+                Log::info("✅ Image $index uploadée vers Supabase: $path");
                 
             } catch (\Exception $e) {
-                \Log::error("❌ Échec Supabase pour image $index: " . $e->getMessage());
+                Log::error("❌ Échec Supabase pour image $index: " . $e->getMessage());
                 
                 // Fallback: stockage local
                 $path = $image->store('infrastructures', 'public');
                 $images[] = $path;
-                \Log::info("💾 Fallback local pour image $index: $path");
+                Log::info("💾 Fallback local pour image $index: $path");
             }
         }
     }
 
-    \Log::info("📊 Images finales à sauvegarder: " . json_encode($images));
+    Log::info("📊 Images finales à sauvegarder: " . json_encode($images));
 
     
     
@@ -187,13 +230,13 @@ class ActeurController extends Controller
 
 private function uploadToSupabase($file)
 {
-    \Log::info("🔧 uploadToSupabase appelée");
+    Log::info("🔧 uploadToSupabase appelée");
     
     $supabaseUrl = env('SUPABASE_URL');
     $serviceKey = env('SUPABASE_SERVICE_KEY');
     
-    \Log::info("🌐 URL Supabase: " . ($supabaseUrl ?: 'NON DÉFINIE'));
-    \Log::info("🔑 Service Key présente: " . (!empty($serviceKey) ? 'OUI (' . strlen($serviceKey) . ' chars)' : 'NON'));
+    Log::info("🌐 URL Supabase: " . ($supabaseUrl ?: 'NON DÉFINIE'));
+    Log::info("🔑 Service Key présente: " . (!empty($serviceKey) ? 'OUI (' . strlen($serviceKey) . ' chars)' : 'NON'));
     
     if (empty($supabaseUrl) || empty($serviceKey)) {
         throw new \Exception("Configuration Supabase manquante");
@@ -212,8 +255,8 @@ private function uploadToSupabase($file)
     $path = 'infrastructures/' . $filename;
     $url = "$supabaseUrl/storage/v1/object/images/$path";
     
-    \Log::info("📤 URL upload: $url");
-    \Log::info("📁 Fichier: " . $file->getRealPath() . " (" . $file->getSize() . " bytes)");
+    Log::info("📤 URL upload: $url");
+    Log::info("📁 Fichier: " . $file->getRealPath() . " (" . $file->getSize() . " bytes)");
     
     try {
         $response = $client->post($url, [
@@ -228,18 +271,18 @@ private function uploadToSupabase($file)
         $statusCode = $response->getStatusCode();
         $responseBody = $response->getBody()->getContents();
         
-        \Log::info("📊 Réponse Supabase - Status: $statusCode");
-        \Log::info("📊 Body: $responseBody");
+        Log::info("📊 Réponse Supabase - Status: $statusCode");
+        Log::info("📊 Body: $responseBody");
         
         if ($statusCode >= 200 && $statusCode < 300) {
-            \Log::info("✅ SUCCESS: Upload Supabase réussi: $path");
+            Log::info("✅ SUCCESS: Upload Supabase réussi: $path");
             return $path;
         } else {
             throw new \Exception("Status code inattendu: $statusCode");
         }
         
     } catch (\Exception $e) {
-        \Log::error("💥 Exception complète: " . get_class($e) . " - " . $e->getMessage());
+        Log::error("💥 Exception complète: " . get_class($e) . " - " . $e->getMessage());
         throw $e;
     }
 }
@@ -302,9 +345,9 @@ private function uploadToSupabase($file)
             try {
                 // Tentative de suppression sur Supabase
                 $this->deleteFromSupabase($imageToRemove);
-                \Log::info("✅ Image supprimée de Supabase: $imageToRemove");
+                Log::info("✅ Image supprimée de Supabase: $imageToRemove");
             } catch (\Exception $e) {
-                \Log::error("❌ Échec suppression Supabase pour: $imageToRemove - " . $e->getMessage());
+                Log::error("❌ Échec suppression Supabase pour: $imageToRemove - " . $e->getMessage());
             }
             
             // Suppression locale en fallback
@@ -313,30 +356,30 @@ private function uploadToSupabase($file)
     }
 
     // Ajouter les nouvelles images avec upload vers Supabase
-    \Log::info("🚀 Début upload nouvelles images - Nombre: " . ($request->hasFile('images') ? count($request->file('images')) : 0));
+    Log::info("🚀 Début upload nouvelles images - Nombre: " . ($request->hasFile('images') ? count($request->file('images')) : 0));
     
     if ($request->hasFile('images')) {
         foreach ($request->file('images') as $index => $image) {
-            \Log::info("📸 Nouvelle image $index - Nom: " . $image->getClientOriginalName() . " - Taille: " . $image->getSize());
+            Log::info("📸 Nouvelle image $index - Nom: " . $image->getClientOriginalName() . " - Taille: " . $image->getSize());
             
             try {
                 // Tentative d'upload vers Supabase
                 $path = $this->uploadToSupabase($image);
                 $images[] = $path;
-                \Log::info("✅ Nouvelle image $index uploadée vers Supabase: $path");
+                Log::info("✅ Nouvelle image $index uploadée vers Supabase: $path");
                 
             } catch (\Exception $e) {
-                \Log::error("❌ Échec Supabase pour nouvelle image $index: " . $e->getMessage());
+                Log::error("❌ Échec Supabase pour nouvelle image $index: " . $e->getMessage());
                 
                 // Fallback: stockage local
                 $path = $image->store('infrastructures', 'public');
                 $images[] = $path;
-                \Log::info("💾 Fallback local pour nouvelle image $index: $path");
+                Log::info("💾 Fallback local pour nouvelle image $index: $path");
             }
         }
     }
 
-    \Log::info("📊 Images finales après modification: " . json_encode($images));
+    Log::info("📊 Images finales après modification: " . json_encode($images));
 
     // Construire les caractéristiques correctement
     $caracteristiques = [];
@@ -393,7 +436,7 @@ private function uploadToSupabase($file)
 
     private function deleteFromSupabase($imagePath)
 {
-    \Log::info("🗑️ deleteFromSupabase appelée pour: $imagePath");
+    Log::info("🗑️ deleteFromSupabase appelée pour: $imagePath");
     
     $supabaseUrl = env('SUPABASE_URL');
     $serviceKey = env('SUPABASE_SERVICE_KEY');
@@ -413,7 +456,7 @@ private function uploadToSupabase($file)
     
     $url = "$supabaseUrl/storage/v1/object/images/$imagePath";
     
-    \Log::info("🗑️ URL suppression: $url");
+    Log::info("🗑️ URL suppression: $url");
     
     try {
         $response = $client->delete($url, [
@@ -425,18 +468,18 @@ private function uploadToSupabase($file)
         $statusCode = $response->getStatusCode();
         $responseBody = $response->getBody()->getContents();
         
-        \Log::info("📊 Réponse suppression Supabase - Status: $statusCode");
-        \Log::info("📊 Body: $responseBody");
+        Log::info("📊 Réponse suppression Supabase - Status: $statusCode");
+        Log::info("📊 Body: $responseBody");
         
         if ($statusCode >= 200 && $statusCode < 300) {
-            \Log::info("✅ SUCCESS: Suppression Supabase réussie: $imagePath");
+            Log::info("✅ SUCCESS: Suppression Supabase réussie: $imagePath");
             return true;
         } else {
             throw new \Exception("Status code inattendu pour suppression: $statusCode");
         }
         
     } catch (\Exception $e) {
-        \Log::error("💥 Exception suppression Supabase: " . get_class($e) . " - " . $e->getMessage());
+        Log::error("💥 Exception suppression Supabase: " . get_class($e) . " - " . $e->getMessage());
         throw $e;
     }
 }

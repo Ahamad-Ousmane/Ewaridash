@@ -3,65 +3,122 @@
 @section('title', 'Modifier ' . $infrastructure->nom . ' - EWARI')
 @section('page-title', 'Modifier une infrastructure')
 
+@push('styles')
+<!-- Police Exile -->
+<link href="https://fonts.googleapis.com/css2?family=Exile&display=swap" rel="stylesheet">
+<!-- Police Montserrat -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<style>
+    /* Application des polices */
+    .app-title {
+        font-family: 'Exile', cursive;
+        letter-spacing: 1px;
+    }
+    
+    body {
+        font-family: 'Montserrat', sans-serif;
+    }
+    
+    /* Animation pour les cartes */
+    .card-hover {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .card-hover:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Style des boutons d'action */
+    .action-btn {
+        @apply p-2 rounded-lg hover:bg-gray-100 transition-colors;
+    }
+    .action-btn.view {
+        @apply text-indigo-600 hover:text-indigo-800;
+    }
+    .action-btn.edit {
+        @apply text-gray-600 hover:text-gray-800;
+    }
+    .action-btn.delete {
+        @apply text-red-600 hover:text-red-800;
+    }
+
+    /* Style pour les zones de drag & drop */
+    .drop-zone {
+        transition: all 0.3s ease;
+    }
+    .drop-zone.active {
+        border-color: #6366f1;
+        background-color: #eef2ff;
+    }
+</style>
+@endpush
+
 @section('sidebar')
 <!-- Acteur Navigation -->
 <a href="{{ route('acteur.dashboard') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-xl text-gray-300 hover:bg-gray-700 hover:text-white transition-colors">
-    <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4M8 7h8"></path>
-    </svg>
+    <i class="bi bi-grid mr-3"></i>
     Dashboard
 </a>
 
 <a href="{{ route('acteur.profile') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-xl text-gray-300 hover:bg-gray-700 hover:text-white transition-colors">
-    <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-    </svg>
+    <i class="bi bi-person mr-3"></i>
     Mon Profil
 </a>
 
 <a href="{{ route('acteur.infrastructures.index') }}" class="nav-link-active flex items-center px-4 py-3 text-sm font-medium rounded-xl text-white">
-    <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-    </svg>
+    <i class="bi bi-building mr-3"></i>
     Mes Infrastructures
 </a>
 @endsection
 
 @section('content')
 <div class="p-6 space-y-6">
+    <!-- Messages d'alerte -->
+    @if(session('success'))
+    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl mb-6">
+        <div class="flex items-center">
+            <i class="bi bi-check-circle mr-2"></i>
+            {{ session('success') }}
+        </div>
+    </div>
+    @endif
+
+    @if(session('error'))
+    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6">
+        <div class="flex items-center">
+            <i class="bi bi-exclamation-triangle mr-2"></i>
+            {{ session('error') }}
+        </div>
+    </div>
+    @endif
+
     <!-- Breadcrumb -->
     <nav class="flex" aria-label="Breadcrumb">
         <ol class="inline-flex items-center space-x-1 md:space-x-3">
             <li class="inline-flex items-center">
-                <a href="{{ route('acteur.dashboard') }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">
-                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-9 9a1 1 0 001.414 1.414L2 12.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-4.586l.293.293a1 1 0 001.414-1.414l-9-9z"></path>
-                    </svg>
+                <a href="{{ route('acteur.dashboard') }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-indigo-600">
+                    <i class="bi bi-house-door mr-2"></i>
                     Dashboard
                 </a>
             </li>
             <li>
                 <div class="flex items-center">
-                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
-                    </svg>
-                    <a href="{{ route('acteur.infrastructures.index') }}" class="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2">Infrastructures</a>
+                    <i class="bi bi-chevron-right text-gray-400"></i>
+                    <a href="{{ route('acteur.infrastructures.index') }}" class="ml-1 text-sm font-medium text-gray-700 hover:text-indigo-600 md:ml-2">Infrastructures</a>
                 </div>
             </li>
             <li>
                 <div class="flex items-center">
-                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
-                    </svg>
-                    <a href="{{ route('acteur.infrastructures.show', $infrastructure) }}" class="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2">{{ $infrastructure->nom }}</a>
+                    <i class="bi bi-chevron-right text-gray-400"></i>
+                    <a href="{{ route('acteur.infrastructures.show', $infrastructure) }}" class="ml-1 text-sm font-medium text-gray-700 hover:text-indigo-600 md:ml-2">{{ $infrastructure->nom }}</a>
                 </div>
             </li>
             <li aria-current="page">
                 <div class="flex items-center">
-                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
-                    </svg>
+                    <i class="bi bi-chevron-right text-gray-400"></i>
                     <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">Modifier</span>
                 </div>
             </li>
@@ -69,7 +126,7 @@
     </nav>
 
     <!-- Header -->
-    <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+    <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 card-hover">
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
             <div>
                 <h1 class="text-2xl font-bold text-gray-900">Modifier l'infrastructure</h1>
@@ -77,16 +134,11 @@
             </div>
             <div class="mt-4 lg:mt-0 flex space-x-3">
                 <a href="{{ route('acteur.infrastructures.show', $infrastructure) }}" class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                    </svg>
+                    <i class="bi bi-eye mr-2"></i>
                     Voir l'infrastructure
                 </a>
                 <a href="{{ route('acteur.infrastructures.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                    </svg>
+                    <i class="bi bi-arrow-left mr-2"></i>
                     Retour à la liste
                 </a>
             </div>
@@ -99,7 +151,7 @@
         @method('PUT')
 
         <!-- Informations de base -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 card-hover">
             <div class="px-6 py-4 border-b border-gray-100">
                 <h3 class="text-lg font-semibold text-gray-900">Informations de base</h3>
                 <p class="text-sm text-gray-600 mt-1">Les informations essentielles de votre infrastructure</p>
@@ -149,7 +201,7 @@
                     @error('localisation')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
-                    </div>
+                </div>
 
                 <!-- Description -->
                 <div>
@@ -184,7 +236,7 @@
         </div>
 
         <!-- Caractéristiques -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 card-hover">
             <div class="px-6 py-4 border-b border-gray-100">
                 <h3 class="text-lg font-semibold text-gray-900">Caractéristiques</h3>
                 <p class="text-sm text-gray-600 mt-1">Détails spécifiques de votre infrastructure</p>
@@ -252,7 +304,7 @@
         </div>
 
         <!-- Images -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 card-hover">
             <div class="px-6 py-4 border-b border-gray-100">
                 <h3 class="text-lg font-semibold text-gray-900">Images</h3>
                 <p class="text-sm text-gray-600 mt-1">Ajoutez des images attrayantes de votre infrastructure</p>
@@ -272,9 +324,7 @@
                             <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 rounded-lg transition-all flex items-center justify-center">
                                 <button type="button" onclick="removeImage({{ $index }})" 
                                         class="opacity-0 group-hover:opacity-100 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-all">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                    </svg>
+                                    <i class="bi bi-trash"></i>
                                 </button>
                             </div>
                             <input type="hidden" name="existing_images[]" value="{{ $image }}">
@@ -287,11 +337,9 @@
                 <!-- Nouvelles images -->
                 <div>
                     <h4 class="text-sm font-medium text-gray-700 mb-3">Ajouter de nouvelles images</h4>
-                    <div class="flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl hover:border-gray-400 transition-colors">
+                    <div class="flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl drop-zone">
                         <div class="space-y-1 text-center">
-                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
+                            <i class="bi bi-images text-gray-400 text-4xl mx-auto"></i>
                             <div class="flex text-sm text-gray-600">
                                 <label for="images" class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
                                     <span>Télécharger des images</span>
@@ -321,9 +369,7 @@
             <div class="flex items-center space-x-4">
                 <button type="submit" name="action" value="save" 
                         class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
+                    <i class="bi bi-check-circle mr-2"></i>
                     Enregistrer les modifications
                 </button>
             </div>
@@ -375,9 +421,7 @@ function previewImages(input) {
                         <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 rounded-lg transition-all flex items-center justify-center">
                             <button type="button" onclick="removeNewImage(this, ${index})" 
                                     class="opacity-0 group-hover:opacity-100 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-all">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                </svg>
+                                <i class="bi bi-x-lg"></i>
                             </button>
                         </div>
                     `;
@@ -425,22 +469,22 @@ document.querySelector('form').addEventListener('submit', function(e) {
 });
 
 // Gestion du drag & drop pour les images
-const dropZone = document.querySelector('.border-dashed');
+const dropZone = document.querySelector('.drop-zone');
 const fileInput = document.getElementById('images');
 
 dropZone.addEventListener('dragover', function(e) {
     e.preventDefault();
-    this.classList.add('border-indigo-400', 'bg-indigo-50');
+    this.classList.add('active');
 });
 
 dropZone.addEventListener('dragleave', function(e) {
     e.preventDefault();
-    this.classList.remove('border-indigo-400', 'bg-indigo-50');
+    this.classList.remove('active');
 });
 
 dropZone.addEventListener('drop', function(e) {
     e.preventDefault();
-    this.classList.remove('border-indigo-400', 'bg-indigo-50');
+    this.classList.remove('active');
     
     const files = e.dataTransfer.files;
     if (files.length > 0) {
