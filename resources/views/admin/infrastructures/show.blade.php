@@ -322,7 +322,7 @@
                                     @case('restaurant')
                                         <i class="bi bi-cup-hot text-white"></i>
                                         @break
-                                    @case('plage')
+                                    @case('attraction')
                                         <i class="bi bi-umbrella text-white"></i>
                                         @break
                                     @case('transport')

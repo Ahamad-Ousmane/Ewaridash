@@ -40,20 +40,6 @@
         min-width: 100%;
         width: max-content;
     }
-
-    /* Style des boutons d'action */
-    .action-btn {
-        @apply p-2 rounded-lg hover:bg-gray-100 transition-colors;
-    }
-    .action-btn.view {
-        @apply text-indigo-600 hover:text-indigo-800;
-    }
-    .action-btn.edit {
-        @apply text-gray-600 hover:text-gray-800;
-    }
-    .action-btn.delete {
-        @apply text-red-600 hover:text-red-800;
-    }
 </style>
 @endpush
 
@@ -78,14 +64,6 @@
 @section('content')
 <div class="p-6 space-y-6">
     <!-- Messages d'alerte -->
-    @if(session('success'))
-    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl mb-6">
-        <div class="flex items-center">
-            <i class="bi bi-check-circle mr-2"></i>
-            {{ session('success') }}
-        </div>
-    </div>
-    @endif
 
     @if(session('error'))
     <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6">
@@ -186,9 +164,8 @@
                         <option value="">Tous les types</option>
                         <option value="hotel" {{ request('type') === 'hotel' ? 'selected' : '' }}>Hôtels</option>
                         <option value="restaurant" {{ request('type') === 'restaurant' ? 'selected' : '' }}>Restaurants</option>
-                        <option value="plage" {{ request('type') === 'plage' ? 'selected' : '' }}>Plages</option>
+                        <option value="attraction" {{ request('type') === 'attraction' ? 'selected' : '' }}>Attractions</option>
                         <option value="transport" {{ request('type') === 'transport' ? 'selected' : '' }}>Transport</option>
-                        <option value="loisir" {{ request('type') === 'loisir' ? 'selected' : '' }}>Loisir</option>
                     </select>
                 </div>
 
@@ -267,7 +244,7 @@
                                                 @case('restaurant')
                                                     <i class="bi bi-cup-hot text-white"></i>
                                                     @break
-                                                @case('plage')
+                                                @case('attraction')
                                                     <i class="bi bi-umbrella text-white"></i>
                                                     @break
                                                 @case('transport')
@@ -345,7 +322,7 @@
                                         @case('restaurant')
                                             <i class="bi bi-cup-hot text-white"></i>
                                             @break
-                                        @case('plage')
+                                        @case('attraction')
                                             <i class="bi bi-umbrella text-white"></i>
                                             @break
                                         @case('transport')

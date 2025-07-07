@@ -168,7 +168,7 @@
                         <option value="">Tous les types</option>
                         <option value="hotel" {{ request('type') === 'hotel' ? 'selected' : '' }}>Hôtels</option>
                         <option value="restaurant" {{ request('type') === 'restaurant' ? 'selected' : '' }}>Restaurants</option>
-                        <option value="plage" {{ request('type') === 'plage' ? 'selected' : '' }}>Plages</option>
+                        <option value="attraction" {{ request('type') === 'attraction' ? 'selected' : '' }}>Attractions</option>
                         <option value="transport" {{ request('type') === 'transport' ? 'selected' : '' }}>Transport</option>
                     </select>
                 </div>
@@ -303,7 +303,7 @@
                                     @case('restaurant')
                                     <i class="bi bi-cup-hot text-white"></i>
                                     @break
-                                    @case('plage')
+                                    @case('attraction')
                                     <i class="bi bi-umbrella text-white"></i>
                                     @break
                                     @case('transport')

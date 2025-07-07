@@ -14,8 +14,6 @@ use Illuminate\Support\Facades\Log;
 
 class ActeurController extends Controller
 {
-    
-
     public function infrastructures(Request $request)
     {
         $acteur = Auth::user()->acteurTouristique;
@@ -68,37 +66,37 @@ class ActeurController extends Controller
     }
 
     public function dashboard()
-{
-    $acteur = Auth::user()->acteurTouristique;
-    
-    // Si l'acteur n'existe pas, créer un profil de base
-    if (!$acteur) {
-        $acteur = ActeurTouristique::create([
-            'utilisateur_id' => Auth::id(),
-            'nom_entreprise' => Auth::user()->nom . ' ' . Auth::user()->prenom . ' - Entreprise',
-            'description' => null,
-            'adresse' => null,
-            'site_web' => null,
-            'type_activite' => 'autre', // Valeur par défaut
-        ]);
+    {
+        $acteur = Auth::user()->acteurTouristique;
+        
+        // Si l'acteur n'existe pas, créer un profil de base
+        if (!$acteur) {
+            $acteur = ActeurTouristique::create([
+                'utilisateur_id' => Auth::id(),
+                'nom_entreprise' => Auth::user()->nom . ' ' . Auth::user()->prenom . ' - Entreprise',
+                'description' => null,
+                'adresse' => null,
+                'site_web' => null,
+                'type_activite' => 'autre', // Valeur par défaut
+            ]);
+        }
+
+        $stats = [
+            'total_infrastructures' => $acteur->infrastructures()->count(),
+            'infrastructures_actives' => $acteur->infrastructuresActives()->count(),
+            'hotels' => $acteur->infrastructures()->byType('hotel')->count(),
+            'restaurants' => $acteur->infrastructures()->byType('restaurant')->count(),
+            'attractions' => $acteur->infrastructures()->byType('attraction')->count(),
+            'transports' => $acteur->infrastructures()->byType('transport')->count(),
+        ];
+
+        $recentInfrastructures = $acteur->infrastructures()
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return view('acteur.dashboard', compact('acteur', 'stats', 'recentInfrastructures'));
     }
-
-    $stats = [
-        'total_infrastructures' => $acteur->infrastructures()->count(),
-        'infrastructures_actives' => $acteur->infrastructuresActives()->count(),
-        'hotels' => $acteur->infrastructures()->byType('hotel')->count(),
-        'restaurants' => $acteur->infrastructures()->byType('restaurant')->count(),
-        'plages' => $acteur->infrastructures()->byType('plage')->count(),
-        'transports' => $acteur->infrastructures()->byType('transport')->count(),
-    ];
-
-    $recentInfrastructures = $acteur->infrastructures()
-        ->latest()
-        ->take(5)
-        ->get();
-
-    return view('acteur.dashboard', compact('acteur', 'stats', 'recentInfrastructures'));
-}
 
     public function profile()
     {
@@ -112,49 +110,54 @@ class ActeurController extends Controller
     return view('acteur.profile.create');
 }
 
-    public function updateProfile(Request $request)
-    {
-        $request->validate([
-            'nom_entreprise' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'adresse' => 'nullable|string',
-            'site_web' => 'nullable|url',
-            'facebook' => 'nullable|url',
-            'instagram' => 'nullable|url',
-            'twitter' => 'nullable|url',
+public function updateProfile(Request $request)
+{
+    $request->validate([
+        'nom_entreprise' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'adresse' => 'required|string',
+        'ville' => 'required|string',
+        'telephone_entreprise' => 'nullable|string',
+        'site_web' => 'nullable|url',
+        'facebook' => 'nullable|url',
+        'instagram' => 'nullable|url',
+        'twitter' => 'nullable|url',
+    ]);
+
+    $reseaux = [
+        'facebook' => $request->facebook,
+        'instagram' => $request->instagram,
+        'twitter' => $request->twitter,
+    ];
+
+    $acteur = Auth::user()->acteurTouristique;
+
+    if (!$acteur) {
+        $acteur = ActeurTouristique::create([
+            'utilisateur_id' => Auth::id(),
+            'nom_entreprise' => $request->nom_entreprise,
+            'description' => $request->description,
+            'adresse' => $request->adresse,
+            'ville' => $request->ville,
+            'telephone_entreprise' => $request->telephone_entreprise,
+            'site_web' => $request->site_web,
+            'reseaux_sociaux' => $reseaux,
         ]);
-
-        $acteur = Auth::user()->acteurTouristique;
-        
-        if (!$acteur) {
-            $acteur = ActeurTouristique::create([
-                'utilisateur_id' => Auth::id(),
-                'nom_entreprise' => $request->nom_entreprise,
-                'description' => $request->description,
-                'adresse' => $request->adresse,
-                'site_web' => $request->site_web,
-                'reseaux_sociaux' => [
-                    'facebook' => $request->facebook,
-                    'instagram' => $request->instagram,
-                    'twitter' => $request->twitter,
-                ],
-            ]);
-        } else {
-            $acteur->update([
-                'nom_entreprise' => $request->nom_entreprise,
-                'description' => $request->description,
-                'adresse' => $request->adresse,
-                'site_web' => $request->site_web,
-                'reseaux_sociaux' => [
-                    'facebook' => $request->facebook,
-                    'instagram' => $request->instagram,
-                    'twitter' => $request->twitter,
-                ],
-            ]);
-        }
-
-        return back()->with('success', 'Profil mis à jour avec succès.');
+    } else {
+        $acteur->update([
+            'nom_entreprise' => $request->nom_entreprise,
+            'description' => $request->description,
+            'adresse' => $request->adresse,
+            'ville' => $request->ville,
+            'telephone_entreprise' => $request->telephone_entreprise,
+            'site_web' => $request->site_web,
+            'reseaux_sociaux' => $reseaux,
+        ]);
     }
+
+    return back()->with('success', 'Profil mis à jour avec succès.');
+}
+
 
 
     public function createInfrastructure()
@@ -168,7 +171,7 @@ class ActeurController extends Controller
         'nom' => 'required|string|max:255',
         'description' => 'required|string',
         'localisation' => 'required|string',
-        'type' => 'required|in:hotel,restaurant,plage,transport',
+        'type' => 'required|in:hotel,restaurant,attraction,transport,',
         'images.*' => 'nullable|image|max:2048',
         'prix' => 'nullable|numeric',
         'capacite' => 'nullable|integer',
@@ -314,7 +317,7 @@ private function uploadToSupabase($file)
         'nom' => 'required|string|max:255',
         'description' => 'nullable|string',
         'localisation' => 'required|string',
-        'type' => 'required|in:hotel,restaurant,plage,transport',
+        'type' => 'required|in:hotel,restaurant,attraction,transport',
         'is_active' => 'required|boolean',
         'images.*' => 'nullable|image|max:10240', // 10MB
         'existing_images.*' => 'nullable|string',

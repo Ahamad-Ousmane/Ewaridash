@@ -314,6 +314,9 @@ const initActivityChart = () => {
                     beginAtZero: true,
                     grid: {
                         color: 'rgba(0, 0, 0, 0.05)'
+                    },
+                    ticks: {
+                        stepSize: 1
                     }
                 },
                 x: {

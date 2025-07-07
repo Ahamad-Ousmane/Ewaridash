@@ -55,16 +55,7 @@
 @section('content')
 <div class="p-6 space-y-6">
     <!-- Header avec messages -->
-    @if(session('success'))
-    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl mb-6">
-        <div class="flex items-center">
-            <i class="bi bi-check-circle mr-2"></i>
-            {{ session('success') }}
-        </div>
-    </div>
-    @endif
-
-    @if($errors->any()))
+    @if($errors->any())
     <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6">
         <div class="flex items-center mb-2">
             <i class="bi bi-exclamation-triangle mr-2"></i>
@@ -144,28 +135,20 @@
                                 </div>
 
                                 <div>
-                                    <label for="secteur_activite" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Secteur d'activité <span class="text-red-500">*</span>
+                                    <label for="adresse" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Adresse <span class="text-red-500">*</span>
                                     </label>
-                                    <select name="secteur_activite" id="secteur_activite" 
-                                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                                        <option value="">-- Sélectionner --</option>
-                                        <option value="Hébergement" {{ $acteur->secteur_activite === 'Hébergement' ? 'selected' : '' }}>Hébergement</option>
-                                        <option value="Restauration" {{ $acteur->secteur_activite === 'Restauration' ? 'selected' : '' }}>Restauration</option>
-                                        <option value="Transport" {{ $acteur->secteur_activite === 'Transport' ? 'selected' : '' }}>Transport</option>
-                                        <option value="Loisirs" {{ $acteur->secteur_activite === 'Loisirs' ? 'selected' : '' }}>Loisirs</option>
-                                        <option value="Guide touristique" {{ $acteur->secteur_activite === 'Guide touristique' ? 'selected' : '' }}>Guide touristique</option>
-                                        <option value="Agence de voyage" {{ $acteur->secteur_activite === 'Agence de voyage' ? 'selected' : '' }}>Agence de voyage</option>
-                                        <option value="Autre" {{ $acteur->secteur_activite === 'Autre' ? 'selected' : '' }}>Autre</option>
-                                    </select>
+                                    <input type="text" name="adresse" id="adresse"
+                                        value="{{ old('adresse', $acteur->adresse) }}"
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                 </div>
 
                                 <div>
-                                    <label for="numero_licence" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Numéro de licence
+                                    <label for="ville" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Ville <span class="text-red-500">*</span>
                                     </label>
-                                    <input type="text" name="numero_licence" id="numero_licence" 
-                                           value="{{ old('numero_licence', $acteur->numero_licence) }}"
+                                    <input type="text" name="ville" id="ville" 
+                                           value="{{ old('ville', $acteur->ville) }}"
                                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                 </div>
 
@@ -189,32 +172,6 @@
 
                             <div class="space-y-6 flex-1">
                                 <div>
-                                    <label for="adresse" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Adresse <span class="text-red-500">*</span>
-                                    </label>
-                                    <textarea name="adresse" id="adresse" rows="3" 
-                                              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">{{ old('adresse', $acteur->adresse) }}</textarea>
-                                </div>
-
-                                <div>
-                                    <label for="ville" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Ville <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="text" name="ville" id="ville" 
-                                           value="{{ old('ville', $acteur->ville) }}"
-                                           class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                                </div>
-
-                                <div>
-                                    <label for="telephone_entreprise" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Téléphone entreprise
-                                    </label>
-                                    <input type="tel" name="telephone_entreprise" id="telephone_entreprise" 
-                                           value="{{ old('telephone_entreprise', $acteur->telephone_entreprise) }}"
-                                           class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                                </div>
-
-                                <div>
                                     <label for="site_web" class="block text-sm font-medium text-gray-700 mb-2">
                                         Site web
                                     </label>
@@ -225,13 +182,24 @@
                                 </div>
 
                                 <div>
-                                    <label for="horaires" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Horaires d'ouverture
+                                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Email
                                     </label>
-                                    <textarea name="horaires" id="horaires" rows="3" 
-                                              placeholder="Ex: Lun-Ven: 8h-17h, Sam: 9h-12h"
-                                              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">{{ old('horaires', $acteur->horaires) }}</textarea>
+                                    <input type="email" name="email" id="email" 
+                                        value="{{ old('email', $acteur->utilisateur->email ?? '') }}"
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                 </div>
+
+                                <div>
+                                    <label for="telephone_entreprise" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Téléphone entreprise
+                                    </label>
+                                    <input type="tel" name="telephone_entreprise" id="telephone_entreprise" 
+                                        value="{{ old('telephone_entreprise', $acteur->utilisateur->telephone ?? '') }}"
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                </div>
+
+
                             </div>
                         </div>
                     </div>

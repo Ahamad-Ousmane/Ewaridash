@@ -31,7 +31,7 @@ class InfrastructureTouristique extends Model
     const TYPES = [
         'hotel' => 'Hôtel',
         'restaurant' => 'Restaurant',
-        'plage' => 'Espace Plage',
+        'attraction' => 'Attraction',
         'transport' => 'Service de Transport',
     ];
 

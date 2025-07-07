@@ -51,8 +51,7 @@
         }
 
         .mobile-bg {
-            background-image: linear-gradient(135deg, rgba(102, 126, 234, 0.8) 0%, rgba(118, 75, 162, 0.8) 100%), 
-                              url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            background-image: linear-gradient(135deg, rgba(102, 126, 234, 0.8) 0%, rgba(118, 75, 162, 0.8) 100%), url('{{ asset("img/back-login.jpg") }}');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -119,8 +118,8 @@
         <!-- Video Section -->
         <div class="w-3/4 h-full video-background relative">
             <video autoplay muted loop class="absolute inset-0 w-full h-full object-cover">
-                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
-                <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" alt="Tourism background" class="w-full h-full object-cover">
+                <source src="{{ asset('vid/back-login.mp4') }}" type="video/mp4">
+                <img src="{{ asset('img/back-login.jpg') }}" alt="Tourism background" class="w-full h-full object-cover">
             </video>
             <div class="video-overlay"></div>
             <div class="absolute inset-0 flex items-center justify-center z-10">

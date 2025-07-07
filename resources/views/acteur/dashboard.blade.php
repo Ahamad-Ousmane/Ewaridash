@@ -150,12 +150,12 @@
                     <div class="p-3 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600">
                         <i class="bi bi-geo-alt text-white"></i>
                     </div>
-                    <span class="text-2xl font-bold text-gray-900">{{ $stats['plages'] + $stats['transports'] }}</span>
+                    <span class="text-2xl font-bold text-gray-900">{{ $stats['attractions'] + $stats['transports'] + $stats['attractions'] }}</span>
                 </div>
                 <div class="mt-4">
                     <p class="text-sm font-medium text-gray-500">Autres Services</p>
                     <div class="flex items-center mt-2 text-xs text-gray-500">
-                        <span>{{ $stats['plages'] }} plages • {{ $stats['transports'] }} transport</span>
+                        <span>{{ $stats['attractions'] }} attractions • {{ $stats['transports'] }} transport</span>
                     </div>
                 </div>
             </div>
@@ -357,9 +357,9 @@
                     <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
                         <div class="flex items-center">
                             <div class="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
-                            <span class="text-sm font-medium text-gray-900">Plages</span>
+                            <span class="text-sm font-medium text-gray-900">Attractions</span>
                         </div>
-                        <span class="text-sm font-bold text-yellow-600">{{ $stats['plages'] }}</span>
+                        <span class="text-sm font-bold text-yellow-600">{{ $stats['attractions'] }}</span>
                     </div>
                     <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
                         <div class="flex items-center">
@@ -384,9 +384,9 @@ const ctx = document.getElementById('infrastructureChart').getContext('2d');
 new Chart(ctx, {
     type: 'doughnut',
     data: {
-        labels: ['Hôtels', 'Restaurants', 'Plages', 'Transport'],
+        labels: ['Hôtels', 'Restaurants', 'Attractions', 'Transport'],
         datasets: [{
-            data: [{{ $stats['hotels'] }}, {{ $stats['restaurants'] }}, {{ $stats['plages'] }}, {{ $stats['transports'] }}],
+            data: [{{ $stats['hotels'] }}, {{ $stats['restaurants'] }}, {{ $stats['attractions'] }}, {{ $stats['transports'] }}],
             backgroundColor: [
                 'rgb(59, 130, 246)',
                 'rgb(34, 197, 94)',

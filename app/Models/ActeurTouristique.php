@@ -17,6 +17,7 @@ class ActeurTouristique extends Model
         'description',
         'adresse',
         'site_web',
+        'ville', 
         'reseaux_sociaux',
     ];
 

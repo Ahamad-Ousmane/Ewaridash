@@ -10,8 +10,7 @@
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
-            background: linear-gradient(rgba(102, 126, 234, 0.85), rgba(118, 75, 162, 0.85)), 
-                        url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2073&q=80');
+            background: linear-gradient(rgba(102, 126, 234, 0.85), rgba(118, 75, 162, 0.85)), url('{{ asset("img/back-signin.jpg") }}');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -57,40 +56,21 @@
                             Informations personnelles
                         </h3>
                         
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <!-- Prénom -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    Prénom *
-                                </label>
-                                <input type="text" 
-                                       name="prenom" 
-                                       id="prenom"
-                                       value="{{ old('prenom') }}"
-                                       class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200" 
-                                       placeholder="Votre prénom"
-                                       required>
-                                @error('prenom')
-                                    <p class="mt-2 text-sm text-red-500">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <!-- Nom -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    Nom *
-                                </label>
-                                <input type="text" 
-                                       name="nom" 
-                                       id="nom"
-                                       value="{{ old('nom') }}"
-                                       class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200" 
-                                       placeholder="Votre nom"
-                                       required>
-                                @error('nom')
-                                    <p class="mt-2 text-sm text-red-500">{{ $message }}</p>
-                                @enderror
-                            </div>
+                        <!-- Nom -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Nom *
+                            </label>
+                            <input type="text" 
+                                name="nom" 
+                                id="nom"
+                                value="{{ old('nom') }}"
+                                class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200" 
+                                placeholder="Votre nom"
+                                required>
+                            @error('nom')
+                                <p class="mt-2 text-sm text-red-500">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -153,52 +133,20 @@
                             @enderror
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <!-- Type d'activité -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    Type d'activité *
-                                </label>
-                                <select name="type_activite" id="type_activite" 
-                                        class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200"
-                                        required>
-                                    <option value="">Choisissez votre activité</option>
-                                    <option value="hotel" {{ old('type_activite') == 'hotel' ? 'selected' : '' }}>
-                                        Hôtel / Hébergement
-                                    </option>
-                                    <option value="restaurant" {{ old('type_activite') == 'restaurant' ? 'selected' : '' }}>
-                                        Restaurant / Restauration
-                                    </option>
-                                    <option value="transport" {{ old('type_activite') == 'transport' ? 'selected' : '' }}>
-                                        Transport touristique
-                                    </option>
-                                    <option value="activite" {{ old('type_activite') == 'activite' ? 'selected' : '' }}>
-                                        Activités & Attractions
-                                    </option>
-                                    <option value="autre" {{ old('type_activite') == 'autre' ? 'selected' : '' }}>
-                                        Autre
-                                    </option>
-                                </select>
-                                @error('type_activite')
-                                    <p class="mt-2 text-sm text-red-500">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <!-- Ville -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    Ville
-                                </label>
-                                <input type="text" 
-                                       name="ville" 
-                                       id="ville"
-                                       value="{{ old('ville') }}"
-                                       class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200" 
-                                       placeholder="Ville de votre entreprise">
-                                @error('ville')
-                                    <p class="mt-2 text-sm text-red-500">{{ $message }}</p>
-                                @enderror
-                            </div>
+                        <!-- Ville -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Ville
+                            </label>
+                            <input type="text" 
+                                name="ville" 
+                                id="ville"
+                                value="{{ old('ville') }}"
+                                class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200" 
+                                placeholder="Ville de votre entreprise">
+                            @error('ville')
+                                <p class="mt-2 text-sm text-red-500">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <!-- Adresse -->
@@ -437,15 +385,6 @@
             
             const isMatch = password === confirmation;
             this.style.borderColor = isMatch ? 'rgba(34, 197, 94, 0.5)' : 'rgba(239, 68, 68, 0.5)';
-        });
-
-        // Auto-capitalisation des noms
-        document.getElementById('nom').addEventListener('input', function() {
-            this.value = this.value.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
-        });
-
-        document.getElementById('prenom').addEventListener('input', function() {
-            this.value = this.value.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
         });
 
         // Animation smooth scroll si erreurs

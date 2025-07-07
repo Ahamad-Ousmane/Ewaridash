@@ -31,20 +31,6 @@
         box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     }
 
-    /* Style des boutons d'action */
-    .action-btn {
-        @apply p-2 rounded-lg hover:bg-gray-100 transition-colors;
-    }
-    .action-btn.view {
-        @apply text-indigo-600 hover:text-indigo-800;
-    }
-    .action-btn.edit {
-        @apply text-gray-600 hover:text-gray-800;
-    }
-    .action-btn.delete {
-        @apply text-red-600 hover:text-red-800;
-    }
-
     /* Style pour les zones de drag & drop */
     .drop-zone {
         transition: all 0.3s ease;
@@ -75,16 +61,8 @@
 @endsection
 
 @section('content')
-<div class="p-6 space-y-6">
+<div class="p-6 mx-auto">
     <!-- Messages d'alerte -->
-    @if(session('success'))
-    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl mb-6">
-        <div class="flex items-center">
-            <i class="bi bi-check-circle mr-2"></i>
-            {{ session('success') }}
-        </div>
-    </div>
-    @endif
 
     @if(session('error'))
     <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6">
@@ -160,7 +138,7 @@
                             <option value="">Sélectionner un type</option>
                             <option value="hotel" {{ old('type') === 'hotel' ? 'selected' : '' }}>🏨 Hôtel</option>
                             <option value="restaurant" {{ old('type') === 'restaurant' ? 'selected' : '' }}>🍽️ Restaurant</option>
-                            <option value="plage" {{ old('type') === 'plage' ? 'selected' : '' }}>🏖️ Espace Plage</option>
+                            <option value="attraction" {{ old('type') === 'attraction' ? 'selected' : '' }}>🏖️ Attraction </option>
                             <option value="transport" {{ old('type') === 'transport' ? 'selected' : '' }}>🚗 Service de Transport</option>
                         </select>
                         @error('type')
@@ -360,11 +338,11 @@
                 </div>
 
                 <!-- Beach specific fields -->
-                <div x-show="selectedType === 'plage'" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div x-show="selectedType === 'attraction'" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-yellow-50 p-4 rounded-xl">
-                        <h3 class="font-medium text-yellow-900 mb-3">🏖️ Informations Plage</h3>
+                        <h3 class="font-medium text-yellow-900 mb-3">🏖️ Informations Attraction</h3>
                         <p class="text-sm text-yellow-700">
-                            Pour un espace plage, mentionnez les activités disponibles, 
+                            Pour une attraction, mentionnez les activités disponibles, 
                             la location d'équipements, les services de restauration, etc.
                         </p>
                     </div>

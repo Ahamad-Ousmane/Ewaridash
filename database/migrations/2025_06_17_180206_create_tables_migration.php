@@ -30,6 +30,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('adresse')->nullable();
             $table->string('site_web')->nullable();
+            $table->string('ville')->nullable();
             $table->json('reseaux_sociaux')->nullable();
             $table->timestamps();
         });
@@ -42,7 +43,7 @@ return new class extends Migration
             $table->text('description');
             $table->string('localisation');
             $table->json('images')->nullable();
-            $table->enum('type', ['hotel', 'restaurant', 'plage', 'transport']);
+            $table->enum('type', ['hotel', 'restaurant', 'attraction', 'transport']);
             $table->json('caracteristiques')->nullable(); // Prix, capacité, etc.
             $table->boolean('is_active')->default(true);
             $table->timestamps();

@@ -77,14 +77,7 @@
 @section('content')
 <div class="p-6 space-y-6">
     <!-- Messages d'alerte -->
-    @if(session('success'))
-    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl mb-6">
-        <div class="flex items-center">
-            <i class="bi bi-check-circle mr-2"></i>
-            {{ session('success') }}
-        </div>
-    </div>
-    @endif
+
 
     @if(session('error'))
     <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6">
@@ -181,7 +174,7 @@
                             <option value="">Sélectionnez un type</option>
                             <option value="hotel" {{ old('type', $infrastructure->type) === 'hotel' ? 'selected' : '' }}>Hôtel</option>
                             <option value="restaurant" {{ old('type', $infrastructure->type) === 'restaurant' ? 'selected' : '' }}>Restaurant</option>
-                            <option value="plage" {{ old('type', $infrastructure->type) === 'plage' ? 'selected' : '' }}>Espace Plage</option>
+                            <option value="attraction" {{ old('type', $infrastructure->type) === 'attraction' ? 'selected' : '' }}>Attraction</option>
                             <option value="transport" {{ old('type', $infrastructure->type) === 'transport' ? 'selected' : '' }}>Service de Transport</option>
                         </select>
                         @error('type')
