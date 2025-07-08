@@ -109,7 +109,7 @@ class AdminSeeder extends Seeder
             'acteur_touristique_id' => $acteur1->id,
             'nom' => 'Sofitel Hôtel Ibis Cotonou',
             'description' => 'Un hôtel de luxe situé à proximité de l\'aéroport avec des services haut de gamme.',
-            'localisation' => 'Rue 2101, Quartier Ganhi, Cotonou',
+            'localisation' => 'Sofitel, Boulevard de la Marina, Cotonou Bénin',
             'images' => ['infrastructures/sofitel1.jpg'],
             'type' => 'hotel',
             'caracteristiques' => [
@@ -129,7 +129,7 @@ class AdminSeeder extends Seeder
             'acteur_touristique_id' => $acteur1->id,
             'nom' => 'Plage de Fidjrossè',
             'description' => 'Plage prisée de Cotonou, idéale pour les promenades au coucher du soleil.',
-            'localisation' => 'Route des Pêches, Fidjrossè, Cotonou',
+            'localisation' => 'Plage de Fidjrossè, Route des Pêches, Fidjrossè, Cotonou',
             'images' => ['infrastructures/fidjrosse1.jpg'],
             'type' => 'attraction',
             'caracteristiques' => [
@@ -145,7 +145,7 @@ class AdminSeeder extends Seeder
             'acteur_touristique_id' => $acteur1->id,
             'nom' => 'Chez Clarisse Fidjrossè',
             'description' => 'Restaurant local célèbre pour ses poissons braisés et mets béninois.',
-            'localisation' => 'Fidjrossè plage, Cotonou',
+            'localisation' => 'Chez Clarisse, Fidjrossè plage, Cotonou',
             'images' => ['infrastructures/chezclarisse.jpg'],
             'type' => 'restaurant',
             'caracteristiques' => [
@@ -178,7 +178,7 @@ class AdminSeeder extends Seeder
             'acteur_touristique_id' => $acteur1->id,
             'nom' => 'Bus Touristique Cotonou',
             'description' => 'Circuit touristique en bus climatisé pour découvrir les monuments de Cotonou.',
-            'localisation' => 'Départ Place de l’Amazone',
+            'localisation' => 'Bénin',
             'images' => ['infrastructures/bus-tour.jpg'],
             'type' => 'transport',
             'caracteristiques' => [
@@ -195,7 +195,7 @@ class AdminSeeder extends Seeder
             'acteur_touristique_id' => $acteur2->id,
             'nom' => 'Place de l’Amazone',
             'description' => 'Esplanade monumentale abritant la statue de l\'Amazone, symbole historique du Bénin.',
-            'localisation' => 'Centre administratif, Cotonou',
+            'localisation' => 'Place de l’Amazone, Cotonou, Bénin',
             'images' => ['infrastructures/amazone1.jpg'],
             'type' => 'attraction',
             'caracteristiques' => [
@@ -212,7 +212,7 @@ class AdminSeeder extends Seeder
             'acteur_touristique_id' => $acteur2->id,
             'nom' => 'Place Bio Guéra',
             'description' => 'Statue équestre rendant hommage au héros de la résistance du Nord béninois.',
-            'localisation' => 'Carrefour Stade de l’Amitié, Cotonou',
+            'localisation' => 'Monument Bio Guera, Aéroport de Cadjehoun, Cotonou, Bénin',
             'images' => ['infrastructures/bioguera1.jpg'],
             'type' => 'attraction',
             'caracteristiques' => [
@@ -229,7 +229,7 @@ class AdminSeeder extends Seeder
             'acteur_touristique_id' => $acteur2->id,
             'nom' => 'Place Bulgarie',
             'description' => 'Point névralgique et dynamique de la circulation à Cotonou, symbole urbain.',
-            'localisation' => 'Carrefour de la place Bulgarie, Cotonou',
+            'localisation' => 'Place Bulgarie, Cotonou, Bénin',
             'images' => ['infrastructures/bulgarie1.jpg'],
             'type' => 'attraction',
             'caracteristiques' => [
@@ -260,26 +260,9 @@ class AdminSeeder extends Seeder
 
         InfrastructureTouristique::create([
             'acteur_touristique_id' => $acteur2->id,
-            'nom' => 'Le Berlin',
-            'description' => 'Restaurant chic de cuisine européenne et africaine, ambiance feutrée.',
-            'localisation' => 'Haie vive, Cotonou',
-            'images' => ['infrastructures/leberlin.jpg'],
-            'type' => 'restaurant',
-            'caracteristiques' => [
-                'capacite' => 70,
-                'prix' => 18000,
-                'parking' => true,
-                'climatisation' => true,
-                'wifi' => true
-            ],
-            'is_active' => true,
-        ]);
-
-        InfrastructureTouristique::create([
-            'acteur_touristique_id' => $acteur2->id,
             'nom' => 'Le Livingstone',
             'description' => 'Restaurant emblématique à ambiance coloniale avec une carte internationale.',
-            'localisation' => 'Boulevard Saint Michel, Cotonou',
+            'localisation' => 'Le Livingstone, Boulevard Saint Michel, Cotonou, Bénin',
             'images' => ['infrastructures/livingstone.jpg'],
             'type' => 'restaurant',
             'caracteristiques' => [
@@ -297,7 +280,7 @@ class AdminSeeder extends Seeder
             'acteur_touristique_id' => $acteur3->id,
             'nom' => 'Résidence Tata Somba',
             'description' => 'Hébergement traditionnel inspiré de l\'architecture du Nord Bénin.',
-            'localisation' => 'Natitingou',
+            'localisation' => 'Hôtel Tata Somba, Natitingou, Bénin',
             'images' => ['infrastructures/tatasomba.jpg'],
             'type' => 'hotel',
             'caracteristiques' => [
@@ -311,35 +294,38 @@ class AdminSeeder extends Seeder
 
         InfrastructureTouristique::create([
             'acteur_touristique_id' => $acteur3->id,
-            'nom' => 'Maison de la culture de Ouidah',
-            'description' => 'Centre culturel et musée retraçant l\'histoire de l\'esclavage.',
-            'localisation' => 'Route des Esclaves, Ouidah',
-            'images' => ['infrastructures/ouidahculture.jpg'],
+            'nom' => 'Temple des Pythons',
+            'description' => 'Lieu sacré du culte vaudou, célèbre pour sa coexistence entre les pythons vivants et la spiritualité traditionnelle.',
+            'localisation' => 'Temple des Pythons, Ouidah, Bénin',
+            'images' => ['infrastructures/temple-pythons.jpg'],
             'type' => 'attraction',
             'caracteristiques' => [
-                'prix' => 1500,
-                'guide' => true,
-                'accessibilite' => true,
-                'expositions' => ['histoire', 'esclavage']
+                'prix' => 1000,
+                'guide_disponible' => true,
+                'serpents_vivants' => true,
+                'cultes_vodoun' => true,
+                'zone_photographique' => true,
+                'accessibilite' => true
             ],
             'is_active' => true,
         ]);
 
         InfrastructureTouristique::create([
             'acteur_touristique_id' => $acteur3->id,
-            'nom' => 'La Capitainerie de Porto-Novo',
-            'description' => 'Ancien bâtiment colonial devenu lieu de mémoire et de visite.',
-            'localisation' => 'Porto-Novo centre',
-            'images' => ['infrastructures/capitainerie.jpg'],
+            'nom' => 'Grande Mosquée de Porto-Novo',
+            'description' => 'Mosquée historique construite entre 1912 et 1925, alliant style afro-brésilien et héritage islamique.',
+            'localisation' => 'Grande Mosquée de Porto-Novo, Centre-ville, Porto-Novo, Bénin',
+            'images' => ['infrastructures/mosquee-porto.jpg'],
             'type' => 'attraction',
             'caracteristiques' => [
-                'prix' => 1000,
+                'prix' => 0,
                 'accessible' => true,
                 'patrimoine' => true,
-                'audio_guide' => true
+                'culte_actif' => true,
+                'visite_autorisee' => true,
+                'architecture_coloniale' => true
             ],
             'is_active' => true,
         ]);
- 
     }
 }
