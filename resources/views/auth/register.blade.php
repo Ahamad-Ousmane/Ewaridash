@@ -101,7 +101,7 @@
                                        id="telephone"
                                        value="{{ old('telephone') }}"
                                        class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200" 
-                                       placeholder="+229 XX XX XX XX">
+                                       placeholder="+229XXXXXXXX">
                                 @error('telephone')
                                     <p class="mt-2 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
