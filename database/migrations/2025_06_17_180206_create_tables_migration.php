@@ -58,6 +58,17 @@ return new class extends Migration
             $table->json('assets_3d')->nullable();
             $table->timestamps();
         });
+
+        // Table utilisateurs mobiles
+        Schema::create('utilisateurs_mobile', function (Blueprint $table) {
+            $table->uuid('id')->primary(); // UUID fourni par Supabase Auth
+            $table->string('nom');
+            $table->string('email')->unique();
+            $table->string('telephone')->nullable();
+            $table->string('type')->default('touriste');
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
+        });
     }
 
     public function down()
@@ -66,5 +77,6 @@ return new class extends Migration
         Schema::dropIfExists('infrastructure_touristiques');
         Schema::dropIfExists('acteurs_touristiques');
         Schema::dropIfExists('utilisateurs');
+        Schema::dropIfExists('utilisateurs_mobile');
     }
 };
